@@ -45,6 +45,24 @@ a{color:inherit;text-decoration:none}
 .plan-card.popular .plan-btn:hover{background:#c2410c}
 .trust-bar{display:flex;align-items:center;justify-content:center;gap:2rem;margin-top:2.5rem;position:relative;z-index:1;flex-wrap:wrap}
 .trust-item{display:flex;align-items:center;gap:8px;color:#475569;font-size:0.8rem;font-family:'DM Sans',sans-serif}
+.counter-bar{display:flex;align-items:center;justify-content:center;gap:2rem;margin-top:1.5rem;flex-wrap:wrap}
+.counter-item{text-align:center}
+.counter-num{display:block;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#fb923c;letter-spacing:1px;line-height:1}
+.counter-label{font-size:0.75rem;color:#475569;font-family:'DM Sans',sans-serif}
+.counter-sep{width:1px;height:40px;background:rgba(255,255,255,0.08)}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#fff;letter-spacing:2px;text-align:center;margin-bottom:2rem;position:relative;z-index:1}
+.how-section{width:100%;max-width:880px;margin-bottom:4rem;position:relative;z-index:1}
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.step-card{background:#1a2535;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.25rem;position:relative}
+.step-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:rgba(251,146,60,0.1);position:absolute;top:0.5rem;right:1rem;line-height:1}
+.step-icon{margin-bottom:0.75rem}
+.step-card h3{font-family:'DM Sans',sans-serif;font-size:0.95rem;font-weight:600;color:#e2e8f0;margin-bottom:0.5rem}
+.step-card p{font-family:'DM Sans',sans-serif;font-size:0.82rem;color:#64748b;line-height:1.6}
+.faq-section{width:100%;max-width:880px;margin-top:3rem;position:relative;z-index:1}
+.faq-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.faq-item{background:#1a2535;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.25rem}
+.faq-item h4{font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:600;color:#e2e8f0;margin-bottom:0.5rem}
+.faq-item p{font-family:'DM Sans',sans-serif;font-size:0.82rem;color:#64748b;line-height:1.6}
 .app-shell{display:flex;min-height:100vh}
 .sidebar{width:220px;background:#1c1917;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
 .sidebar-brand{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid #292524}
@@ -214,6 +232,8 @@ function renderPlanSelector(){
       <rect x="400" y="620" width="160" height="24" fill="white" rx="4"/>
       <circle cx="500" cy="620" r="20" fill="white"/>
     </svg>
+
+    <!-- HERO -->
     <div class="plan-hero">
       <div class="plan-logo">
         <div class="plan-logo-icon">
@@ -226,7 +246,65 @@ function renderPlanSelector(){
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         Devis · Stock · Factures · Automatique
       </span>
+      <div class="counter-bar">
+        <div class="counter-item">
+          <span class="counter-num" id="cnt-users">12</span>
+          <span class="counter-label">plombiers utilisent Optima</span>
+        </div>
+        <div class="counter-sep"></div>
+        <div class="counter-item">
+          <span class="counter-num">2 min</span>
+          <span class="counter-label">pour créer un devis</span>
+        </div>
+        <div class="counter-sep"></div>
+        <div class="counter-item">
+          <span class="counter-num">0€</span>
+          <span class="counter-label">d'accès pour les premiers</span>
+        </div>
+      </div>
     </div>
+
+    <!-- COMMENT CA MARCHE -->
+    <div class="how-section">
+      <h2 class="section-title">Comment ça marche</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+          </div>
+          <h3>Sur le chantier</h3>
+          <p>Tu ouvres Optima sur ton téléphone. Tu remplis le devis en 2 minutes avec tes prestations et matériaux.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.82a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <h3>Le client reçoit le PDF</h3>
+          <p>Le devis PDF part automatiquement par mail ou WhatsApp. Propre, professionnel, avec ton logo.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+          </div>
+          <h3>La facture se crée seule</h3>
+          <p>Le client accepte ? La facture se génère automatiquement. Ton stock se met à jour en temps réel.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          </div>
+          <h3>Tu pilotes ton activité</h3>
+          <p>Tableau de bord CA en temps réel, alertes stock, rapport mensuel. Tu sais exactement où tu en es.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANS -->
+    <h2 class="section-title" style="margin-bottom:1.5rem">Choisissez votre formule</h2>
     <div class="plan-cards">
       <div class="plan-card" id="pick-starter">
         <p class="plan-name">Starter</p>
@@ -278,12 +356,49 @@ function renderPlanSelector(){
         <button class="plan-btn">Choisir Business →</button>
       </div>
     </div>
+
+    <!-- FAQ -->
+    <div class="faq-section">
+      <h2 class="section-title">Questions fréquentes</h2>
+      <div class="faq-grid">
+        <div class="faq-item">
+          <h4>Est-ce que je peux annuler ?</h4>
+          <p>Oui, à tout moment. Pas d'engagement, pas de frais de résiliation. Tu annules en 1 clic.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Mes données sont-elles sécurisées ?</h4>
+          <p>Oui. Tes données sont stockées localement sur ton appareil. Tu peux les exporter à tout moment en JSON.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Faut-il être informaticien ?</h4>
+          <p>Non. L'appli est pensée pour être utilisée sur chantier, en 2 minutes, même avec les mains sales.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Le paiement est-il sécurisé ?</h4>
+          <p>Oui. Les paiements sont gérés par Stripe, le leader mondial du paiement en ligne sécurisé.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Ça marche sur téléphone ?</h4>
+          <p>Oui, c'est pensé mobile avant tout. iPhone, Android, tablette — tout fonctionne.</p>
+        </div>
+        <div class="faq-item">
+          <h4>C'est quoi l'accès ?</h4>
+          <p>Les formules Pro et Business ont des frais d'accès uniques (49€ ou 99€) en plus de l'abonnement mensuel.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRUST BAR -->
     <div class="trust-bar">
       <div class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Paiement sécurisé Stripe</div>
       <div class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Sans engagement</div>
       <div class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Données sécurisées</div>
+      <div class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Support réactif</div>
     </div>
+
+    <p style="margin-top:1.5rem;font-size:0.75rem;color:#334155;font-family:'DM Sans',sans-serif">© 2026 Optima · Fait pour les plombiers · contact@optima-services.fr</p>
   </div>`;
+
   document.getElementById("pick-starter").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/5kQcN777F5ocgut1fMd3i0c"});
   document.getElementById("pick-pro").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/aFa8wRgIf9Es6TT4rYd3i0f"});
   document.getElementById("pick-business").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/4gM3cxajR6sgeml5w2d3i0d"});
