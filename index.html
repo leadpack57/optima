@@ -184,9 +184,9 @@ function renderPlanSelector(){
     <div class="plan-card popular" id="pick-pro"><span class="plan-badge">⭐ Le plus populaire</span><p class="plan-name">Pro</p><p class="plan-price">59€ <span>/mois</span></p><p class="plan-access">Accès 49€ · Plombier solo actif</p><div class="plan-feature">Devis illimités</div><div class="plan-feature">Stock avec alertes</div><div class="plan-feature">Facture auto depuis devis</div><div class="plan-feature">Tableau de bord CA</div><div class="plan-feature">Export PDF avec logo</div><div class="plan-feature">Export comptable CSV</div><div class="plan-feature">Rapport mensuel d'activité</div><div class="plan-feature locked">Multi-utilisateurs</div><button class="plan-btn">Choisir Pro</button></div>
     <div class="plan-card" id="pick-business"><p class="plan-name">Business</p><p class="plan-price">99€ <span>/mois</span></p><p class="plan-access">Accès 99€ · Artisan avec équipe</p><div class="plan-feature">Devis illimités</div><div class="plan-feature">Stock avec alertes</div><div class="plan-feature">Facture auto depuis devis</div><div class="plan-feature">Tableau de bord CA</div><div class="plan-feature">Export PDF avec logo</div><div class="plan-feature">Export comptable CSV</div><div class="plan-feature">Rapport mensuel d'activité</div><div class="plan-feature">Jusqu'à 3 utilisateurs</div><button class="plan-btn">Choisir Business</button></div>
   </div></div>`;
-  document.getElementById("pick-starter").querySelector(".plan-btn").addEventListener("click",()=>setPlan("starter"));
-  document.getElementById("pick-pro").querySelector(".plan-btn").addEventListener("click",()=>setPlan("pro"));
-  document.getElementById("pick-business").querySelector(".plan-btn").addEventListener("click",()=>setPlan("business"));
+  document.getElementById("pick-starter").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/5kQcN777F5ocgut1fMd3i0c"});
+  document.getElementById("pick-pro").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/aFa8wRgIf9Es6TT4rYd3i0f"});
+  document.getElementById("pick-business").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/4gM3cxajR6sgeml5w2d3i0d"});
 }
 function setPlan(plan){state.plan=plan;saveState();render()}
 function sidebarHtml(current,r){
