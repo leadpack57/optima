@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optima – Gestion artisan plombier</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#faf9f7;--bg2:#fff;--bg3:#f5f4f1;--text:#1c1917;--text2:#57534e;--text3:#78716c;--border:#e7e5e4;--border2:#d6d3d1;--primary:#b45309;--primary-dark:#92400e;--primary-light:#fef3c7;--danger:#dc2626;--danger-light:#fee2e2;--success:#16a34a;--success-light:#dcfce7;--info:#2563eb;--info-light:#dbeafe;--warning:#d97706;--warning-light:#fef3c7;--radius:8px;--shadow:0 1px 3px rgba(0,0,0,.1)}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5}
+a{color:inherit;text-decoration:none}
+.plan-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:var(--bg)}
+.plan-screen h1{font-size:2rem;font-weight:700;font-family:Georgia,serif;color:var(--primary);margin-bottom:0.5rem}
+.plan-screen>p{color:var(--text2);margin-bottom:2rem}
+.plan-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;width:100%;max-width:820px}
+.plan-card{background:var(--bg2);border:2px solid var(--border);border-radius:12px;padding:1.5rem;cursor:pointer;transition:border-color .2s;position:relative}
+.plan-card:hover{border-color:var(--primary)}
+.plan-card.popular{border-color:var(--primary)}
+.plan-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--primary);color:#fff;font-size:0.72rem;font-weight:700;padding:3px 14px;border-radius:99px;white-space:nowrap}
+.plan-name{font-size:1.1rem;font-weight:700;margin-bottom:0.25rem;font-family:Georgia,serif}
+.plan-price{font-size:1.8rem;font-weight:700;color:var(--primary);margin-bottom:0.2rem}
+.plan-price span{font-size:0.9rem;font-weight:400;color:var(--text2)}
+.plan-access{font-size:0.82rem;color:var(--text2);margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.plan-feature{font-size:0.85rem;padding:0.25rem 0;display:flex;align-items:center;gap:0.5rem}
+.plan-feature.locked{color:var(--text3)}
+.plan-feature::before{content:"✓";color:var(--success);font-weight:700;font-size:0.8rem;flex-shrink:0}
+.plan-feature.locked::before{content:"🔒";font-size:0.75rem}
+.plan-btn{margin-top:1.25rem;width:100%;padding:0.65rem;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:0.9rem;font-weight:600;cursor:pointer}
+.plan-btn:hover{background:var(--primary-dark)}
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:220px;background:#1c1917;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sidebar-brand{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid #292524}
+.sidebar-brand h1{color:#fef3c7;font-size:1.1rem;font-weight:700;font-family:Georgia,serif}
+.sidebar-brand p{color:#a8a29e;font-size:0.72rem;margin-top:2px}
+.plan-pill{margin:0.5rem 1.25rem;background:#292524;border-radius:99px;padding:3px 10px;font-size:0.7rem;color:#fcd34d;font-weight:600;text-align:center}
+.nav-links{display:flex;flex-direction:column;padding:0.75rem 0;flex:1}
+.nav-link{display:block;padding:0.55rem 1.25rem;color:#d6d3d1;font-size:0.875rem;transition:background .15s,color .15s;cursor:pointer}
+.nav-link:hover{background:#292524;color:#fff}
+.nav-link.active{background:#b45309;color:#fff}
+.nav-link.locked-nav{opacity:0.45;cursor:default}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0.875rem 1.5rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:10}
+.topbar h2{font-size:1.125rem;font-weight:600;flex:1}
+.topbar-actions{display:flex;gap:0.5rem;flex-wrap:wrap}
+.content{padding:1.5rem;flex:1}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.card h3{font-size:1rem;font-weight:600;margin-bottom:1rem;font-family:Georgia,serif}
+.grid-ca{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;margin-bottom:1rem}
+.card-ca{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}
+.card-ca .label{font-size:0.78rem;color:var(--text3);margin-bottom:0.35rem}
+.card-ca .value{font-size:1.15rem;font-weight:700;color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:0.35rem;padding:0.45rem 0.9rem;border-radius:6px;border:1px solid transparent;font-size:0.875rem;font-weight:500;cursor:pointer;transition:background .15s,opacity .15s;white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn-primary:hover:not(:disabled){background:var(--primary-dark)}
+.btn-secondary{background:var(--bg2);color:var(--text);border-color:var(--border2)}
+.btn-secondary:hover:not(:disabled){background:var(--bg3)}
+.btn-danger{background:var(--danger-light);color:var(--danger);border-color:#fca5a5}
+.btn-danger:hover:not(:disabled){background:#fecaca}
+.btn-success{background:var(--success-light);color:var(--success);border-color:#86efac}
+.btn-success:hover:not(:disabled){background:#bbf7d0}
+.btn-ghost{background:transparent;color:var(--text2);border-color:transparent}
+.btn-ghost:hover{background:var(--bg3)}
+.btn-sm{padding:0.3rem 0.6rem;font-size:0.8rem}
+.form-grid{display:flex;flex-direction:column;gap:0.875rem}
+.form-row{display:flex;flex-direction:column;gap:0.35rem}
+.form-row label{font-size:0.82rem;font-weight:500;color:var(--text2)}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:0.5rem 0.7rem;border:1px solid var(--border2);border-radius:6px;font-size:0.9rem;background:var(--bg2);color:var(--text);transition:border-color .15s}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:none;border-color:var(--primary)}
+.form-row textarea{min-height:80px;resize:vertical}
+.form-row.two{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.form-row.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:0.875rem}
+thead tr{border-bottom:2px solid var(--border)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:hover{background:var(--bg3)}
+th{padding:0.6rem 0.75rem;text-align:left;font-weight:600;font-size:0.8rem;color:var(--text2);white-space:nowrap}
+td{padding:0.6rem 0.75rem;vertical-align:middle}
+.badge{display:inline-block;padding:0.2rem 0.55rem;border-radius:99px;font-size:0.75rem;font-weight:600}
+.badge-brouillon{background:#f5f4f1;color:#57534e}
+.badge-envoye{background:var(--info-light);color:var(--info)}
+.badge-accepte{background:var(--success-light);color:var(--success)}
+.badge-refuse{background:var(--danger-light);color:var(--danger)}
+.badge-payee{background:var(--success-light);color:var(--success)}
+.badge-impayee{background:var(--warning-light);color:var(--warning)}
+.badge-retard{background:var(--danger-light);color:var(--danger)}
+.lines-editor{overflow-x:auto;margin-bottom:0.75rem}
+.lines-editor table{font-size:0.82rem}
+.lines-editor th{white-space:nowrap}
+.lines-editor td input,.lines-editor td select{padding:0.35rem 0.45rem;font-size:0.82rem;border:1px solid var(--border2);border-radius:4px;background:var(--bg2);color:var(--text)}
+.lines-editor td input[type=number]{width:80px}
+.lines-editor td input.ln-lib{width:180px}
+.lines-editor td select.ln-prod{width:140px}
+.totals-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:0.875rem 1rem;max-width:320px;margin-left:auto;display:flex;flex-direction:column;gap:0.35rem;font-size:0.875rem}
+.totals-box div{display:flex;justify-content:space-between;gap:1rem}
+.totals-box .total-ttc{font-weight:700;font-size:1rem;border-top:1px solid var(--border2);padding-top:0.35rem;margin-top:0.2rem}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem}
+.modal{background:var(--bg2);border-radius:10px;padding:1.5rem;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal h3{font-size:1.05rem;font-weight:700;margin-bottom:1.25rem;font-family:Georgia,serif}
+.modal-actions{display:flex;justify-content:flex-end;gap:0.5rem;margin-top:1.25rem}
+.stock-low{color:var(--danger);font-weight:600}
+.alert{padding:0.75rem 1rem;border-radius:6px;font-size:0.875rem;margin-bottom:0.75rem;display:flex;align-items:flex-start;gap:0.5rem}
+.alert-warning{background:var(--warning-light);color:#92400e;border:1px solid #fcd34d}
+.alert-danger{background:var(--danger-light);color:#991b1b;border:1px solid #fca5a5}
+.alert-success{background:var(--success-light);color:#166534;border:1px solid #86efac}
+.alert-info{background:var(--info-light);color:#1e40af;border:1px solid #93c5fd}
+.print-doc{display:none}
+.empty-state{color:var(--text3);font-style:italic;padding:1.5rem 0;text-align:center}
+.overdue-row td{background:#fff5f5}
+@media print{.no-print,.sidebar,.topbar,.topbar-actions,.nav-links{display:none!important}.app-shell{display:block}.main{display:block}.content{padding:0}.print-doc{display:block}.card,.main,.content,.app-shell{border:none!important;box-shadow:none!important;background:white!important}body{background:white}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+"use strict";
+const STORAGE_KEY="optima_v1";
+let _dirty=false;
+const PLANS={
+  starter:{name:"Starter",features:["devis","stock","factures","dashboard","pdf"]},
+  pro:{name:"Pro",features:["devis","stock","factures","dashboard","pdf","export_csv","rapport"]},
+  business:{name:"Business",features:["devis","stock","factures","dashboard","pdf","export_csv","rapport","multi_users"]},
+};
+const defaultState=()=>({
+  plan:null,clients:[],products:[],
+  operationTypes:[{id:uid(),label:"Dépannage"},{id:uid(),label:"Installation"},{id:uid(),label:"Entretien / contrôle"},{id:uid(),label:"Rénovation salle de bains"},{id:uid(),label:"Urgence / fuite"}],
+  quotes:[],invoices:[],
+  counters:{quote:1,invoice:1,quoteYear:new Date().getFullYear(),invoiceYear:new Date().getFullYear()},
+  company:{nom:"Mon entreprise",adresse:"",tel:"",email:"",siret:"",tvaIntracom:"",mentionLegale:""},
+});
+let state=loadState();
+function uid(){return"id_"+Math.random().toString(36).slice(2,11)+Date.now().toString(36)}
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);if(!raw)return defaultState();return migrate(JSON.parse(raw))}catch(e){return defaultState()}}
+function migrate(data){
+  const d=defaultState();
+  if(!data||typeof data!=="object")return d;
+  const counters=data.counters&&typeof data.counters==="object"?{quote:data.counters.quote||1,invoice:data.counters.invoice||1,quoteYear:data.counters.quoteYear||new Date().getFullYear(),invoiceYear:data.counters.invoiceYear||new Date().getFullYear()}:d.counters;
+  const company=data.company&&typeof data.company==="object"?Object.assign(d.company,data.company):d.company;
+  return{plan:data.plan||null,clients:Array.isArray(data.clients)?data.clients:d.clients,products:Array.isArray(data.products)?data.products:d.products,operationTypes:Array.isArray(data.operationTypes)&&data.operationTypes.length?data.operationTypes:d.operationTypes,quotes:Array.isArray(data.quotes)?data.quotes:d.quotes,invoices:Array.isArray(data.invoices)?data.invoices.map(inv=>{if(!inv.echeance&&inv.date){const d=new Date(inv.date);d.setDate(d.getDate()+30);inv.echeance=d.toISOString().slice(0,10)}return inv}):d.invoices,counters,company};
+}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state));_dirty=false}
+function hasFeat(feat){if(!state.plan)return false;return(PLANS[state.plan]||PLANS.starter).features.includes(feat)}
+function formatEUR(n){return new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR"}).format(Number(n)||0)}
+function formatDate(iso){if(!iso)return"—";const d=new Date(iso);return isNaN(d.getTime())?"—":d.toLocaleDateString("fr-FR")}
+function isoToday(){return new Date().toISOString().slice(0,10)}
+function isOverdue(inv){if(!inv||inv.payee||!inv.echeance)return false;return new Date(inv.echeance)<new Date()}
+function startOfDay(d){const x=new Date(d);x.setHours(0,0,0,0);return x}
+function endOfDay(d){const x=new Date(d);x.setHours(23,59,59,999);return x}
+function startOfWeek(d){const x=startOfDay(d);const day=x.getDay();x.setDate(x.getDate()+(day===0?-6:1-day));return x}
+function endOfWeek(d){const s=startOfWeek(d);const e=new Date(s);e.setDate(e.getDate()+6);return endOfDay(e)}
+function startOfMonth(d){return startOfDay(new Date(d.getFullYear(),d.getMonth(),1))}
+function endOfMonth(d){return endOfDay(new Date(d.getFullYear(),d.getMonth()+1,0))}
+function startOfYear(d){return startOfDay(new Date(d.getFullYear(),0,1))}
+function endOfYear(d){return endOfDay(new Date(d.getFullYear(),11,31))}
+function caInRange(start,end,onlyPaid){let sum=0;state.invoices.forEach(inv=>{const t=new Date(inv.date);if(t<start||t>end)return;if(onlyPaid&&!inv.payee)return;sum+=Number(inv.totalTTC)||0});return sum}
+function clientById(id){return state.clients.find(c=>c.id===id)}
+function productById(id){return state.products.find(p=>p.id===id)}
+function opTypeById(id){return state.operationTypes.find(o=>o.id===id)}
+function computeLineTotals(l){const qty=Number(l.qty)||0,pu=Number(l.prixUnitHT)||0,tva=Number(l.tvaPct)||0;const ht=qty*pu,tvaAmt=ht*(tva/100);return{ht,tva:tvaAmt,ttc:ht+tvaAmt}}
+function computeDocTotals(lignes){let ht=0,tva=0;(lignes||[]).forEach(l=>{const t=computeLineTotals(l);ht+=t.ht;tva+=t.tva});return{totalHT:ht,totalTVA:tva,totalTTC:ht+tva}}
+function nextQuoteNumber(){const y=new Date().getFullYear();if(y!==state.counters.quoteYear){state.counters.quote=1;state.counters.quoteYear=y}const n=state.counters.quote++;saveState();return"D-"+y+"-"+String(n).padStart(3,"0")}
+function nextInvoiceNumber(){const y=new Date().getFullYear();if(y!==state.counters.invoiceYear){state.counters.invoice=1;state.counters.invoiceYear=y}const n=state.counters.invoice++;saveState();return"F-"+y+"-"+String(n).padStart(3,"0")}
+function clientHasDocs(clientId){return state.quotes.some(q=>q.clientId===clientId)||state.invoices.some(i=>i.clientId===clientId)}
+function getRoute(){const h=(location.hash||"#/").replace(/^#\/?/,"")||"dashboard";const parts=h.split("/");return{view:parts[0],id:parts[1]||null}}
+function nav(to){if(_dirty&&!confirm("Modifications non enregistrées. Quitter ?"))return;_dirty=false;location.hash="#/"+to}
+const app=document.getElementById("app");
+function render(){
+  if(!state.plan){renderPlanSelector();return}
+  const r=getRoute();
+  const views={dashboard:renderDashboard,clients:renderClients,stock:renderStock,devis:renderQuotes,"nouveau-devis":renderQuoteEditor,"edit-devis":renderQuoteEditor,factures:renderInvoices,"nouvelle-facture":renderInvoiceEditor,"edit-facture":renderInvoiceEditor,types:renderTypes,parametres:renderSettings,rapport:renderRapport};
+  const fn=views[r.view];
+  if(!fn){location.hash="#/dashboard";return}
+  const titles={dashboard:"Tableau de bord",clients:"Clients",stock:"Stock & produits",devis:"Devis","nouveau-devis":"Nouveau devis","edit-devis":"Modifier le devis",factures:"Factures","nouvelle-facture":"Nouvelle facture","edit-facture":"Modifier la facture",types:"Types d'intervention",parametres:"Paramètres entreprise",rapport:"Rapport mensuel"};
+  app.innerHTML='<div class="app-shell">'+sidebarHtml(r.view,r)+'<div class="main"><header class="topbar"><h2>'+escapeHtml(titles[r.view]||"Optima")+'</h2><div class="topbar-actions no-print"><button type="button" class="btn btn-secondary" id="btn-export">⬇ Exporter</button><label class="btn btn-secondary" style="cursor:pointer;margin:0">⬆ Importer<input type="file" id="import-file" accept=".json" style="display:none"></label>'+(hasFeat("export_csv")?'<button type="button" class="btn btn-secondary" id="btn-csv">📊 Export comptable</button>':'')+'</div></header><div class="content" id="main-content"></div></div></div>';
+  document.getElementById("main-content").appendChild(fn(r));
+  bindGlobalActions();
+  document.querySelectorAll(".nav-link:not(.locked-nav)").forEach(el=>{el.addEventListener("click",e=>{e.preventDefault();nav(el.getAttribute("data-route"))})});
+}
+function renderPlanSelector(){
+  app.innerHTML=`<div class="plan-screen"><h1>Optima</h1><p>Choisissez votre formule pour commencer</p><div class="plan-cards">
+    <div class="plan-card" id="pick-starter"><p class="plan-name">Starter</p><p class="plan-price">29€ <span>/mois</span></p><p class="plan-access">Accès gratuit · Premiers utilisateurs</p><div class="plan-feature">Devis illimités</div><div class="plan-feature">Stock avec alertes</div><div class="plan-feature">Facture auto depuis devis</div><div class="plan-feature">Tableau de bord CA</div><div class="plan-feature">Export PDF avec logo</div><div class="plan-feature locked">Export comptable CSV</div><div class="plan-feature locked">Rapport mensuel</div><div class="plan-feature locked">Multi-utilisateurs</div><button class="plan-btn">Choisir Starter</button></div>
+    <div class="plan-card popular" id="pick-pro"><span class="plan-badge">⭐ Le plus populaire</span><p class="plan-name">Pro</p><p class="plan-price">59€ <span>/mois</span></p><p class="plan-access">Accès 49€ · Plombier solo actif</p><div class="plan-feature">Devis illimités</div><div class="plan-feature">Stock avec alertes</div><div class="plan-feature">Facture auto depuis devis</div><div class="plan-feature">Tableau de bord CA</div><div class="plan-feature">Export PDF avec logo</div><div class="plan-feature">Export comptable CSV</div><div class="plan-feature">Rapport mensuel d'activité</div><div class="plan-feature locked">Multi-utilisateurs</div><button class="plan-btn">Choisir Pro</button></div>
+    <div class="plan-card" id="pick-business"><p class="plan-name">Business</p><p class="plan-price">99€ <span>/mois</span></p><p class="plan-access">Accès 99€ · Artisan avec équipe</p><div class="plan-feature">Devis illimités</div><div class="plan-feature">Stock avec alertes</div><div class="plan-feature">Facture auto depuis devis</div><div class="plan-feature">Tableau de bord CA</div><div class="plan-feature">Export PDF avec logo</div><div class="plan-feature">Export comptable CSV</div><div class="plan-feature">Rapport mensuel d'activité</div><div class="plan-feature">Jusqu'à 3 utilisateurs</div><button class="plan-btn">Choisir Business</button></div>
+  </div></div>`;
+  document.getElementById("pick-starter").querySelector(".plan-btn").addEventListener("click",()=>setPlan("starter"));
+  document.getElementById("pick-pro").querySelector(".plan-btn").addEventListener("click",()=>setPlan("pro"));
+  document.getElementById("pick-business").querySelector(".plan-btn").addEventListener("click",()=>setPlan("business"));
+}
+function setPlan(plan){state.plan=plan;saveState();render()}
+function sidebarHtml(current,r){
+  const plan=PLANS[state.plan]||PLANS.starter;
+  const routes=[["dashboard","📊 Tableau de bord",true],["clients","👥 Clients",true],["stock","📦 Stock & produits",true],["devis","📋 Devis",true],["factures","🧾 Factures",true],["rapport","📈 Rapport mensuel",hasFeat("rapport")],["types","🔧 Types d'intervention",true],["parametres","⚙ Paramètres",true]];
+  let links="";
+  routes.forEach(([route,label,allowed])=>{
+    const active=current===route||(route==="devis"&&(r.view==="nouveau-devis"||r.view==="edit-devis"))||(route==="factures"&&(r.view==="nouvelle-facture"||r.view==="edit-facture"));
+    if(allowed)links+=`<a href="#/${route}" class="nav-link${active?" active":""}" data-route="${route}">${escapeHtml(label)}</a>`;
+    else links+=`<span class="nav-link locked-nav" title="Disponible en Pro/Business">${escapeHtml(label)} 🔒</span>`;
+  });
+  const overdueCount=state.invoices.filter(i=>isOverdue(i)).length;
+  return`<aside class="sidebar"><div class="sidebar-brand"><h1>Optima</h1><p>Gestion artisan plombier</p></div><div class="plan-pill">${plan.name}</div><nav class="nav-links">${links}</nav>${overdueCount?`<div style="padding:0.75rem 1.25rem;background:#7f1d1d;margin:0.5rem 0.75rem;border-radius:6px"><p style="color:#fca5a5;font-size:0.75rem;font-weight:600">${overdueCount} facture${overdueCount>1?"s":""} en retard</p></div>`:""}<div style="padding:0.75rem 1.25rem;margin-top:auto"><button class="btn btn-ghost btn-sm" id="btn-change-plan" style="color:#a8a29e;font-size:0.75rem;width:100%">Changer de formule</button></div><div style="padding:0.5rem 1.25rem 1rem;font-size:0.7rem;color:#78716c">Données locales — exportez régulièrement.</div></aside>`;
+}
+function bindGlobalActions(){
+  document.getElementById("btn-export").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="optima-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(a.href)});
+  document.getElementById("import-file").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{state=migrate(JSON.parse(reader.result));saveState();render()}catch{alert("Fichier JSON invalide.")}e.target.value=""};reader.readAsText(f)});
+  const csvBtn=document.getElementById("btn-csv");
+  if(csvBtn)csvBtn.addEventListener("click",exportCSV);
+  const cpBtn=document.getElementById("btn-change-plan");
+  if(cpBtn)cpBtn.addEventListener("click",()=>{state.plan=null;saveState();render()});
+}
+function exportCSV(){
+  const rows=[["Numéro","Date","Échéance","Client","HT","TVA","TTC","Payée","Type"]];
+  state.invoices.slice().sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(inv=>{const c=clientById(inv.clientId);const t=opTypeById(inv.typeOpId);rows.push([inv.numero,inv.date,inv.echeance||"",c?c.nom:"",(Number(inv.totalHT)||0).toFixed(2),(Number(inv.totalTVA)||0).toFixed(2),(Number(inv.totalTTC)||0).toFixed(2),inv.payee?"Oui":"Non",t?t.label:""])});
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(";")).join("\n");
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="optima-comptabilite-"+new Date().toISOString().slice(0,7)+".csv";a.click();URL.revokeObjectURL(a.href);
+}
+function escapeHtml(s){if(s==null)return"";const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function markDirty(){_dirty=true}
+function renderDashboard(){
+  const now=new Date();
+  const caJ=caInRange(startOfDay(now),endOfDay(now),false),caS=caInRange(startOfWeek(now),endOfWeek(now),false),caM=caInRange(startOfMonth(now),endOfMonth(now),false),caA=caInRange(startOfYear(now),endOfYear(now),false);
+  const caJP=caInRange(startOfDay(now),endOfDay(now),true),caSP=caInRange(startOfWeek(now),endOfWeek(now),true),caMP=caInRange(startOfMonth(now),endOfMonth(now),true),caAP=caInRange(startOfYear(now),endOfYear(now),true);
+  const overdueInvs=state.invoices.filter(i=>isOverdue(i)),lowStock=state.products.filter(p=>Number(p.stock)<=Number(p.seuil||0));
+  const el=document.createElement("div");
+  let alerts="";
+  if(overdueInvs.length)alerts+=`<div class="alert alert-danger">⚠ ${overdueInvs.length} facture${overdueInvs.length>1?"s":""} en retard de paiement.</div>`;
+  if(lowStock.length)alerts+=`<div class="alert alert-warning">📦 ${lowStock.length} produit${lowStock.length>1?"s":""} en stock faible : ${lowStock.map(p=>escapeHtml(p.nom)).join(", ")}.</div>`;
+  el.innerHTML=alerts+'<p style="color:var(--text2);margin:0 0 0.35rem;font-size:0.875rem">CA TTC : <strong>facturé</strong> = toutes factures · <strong>encaissé</strong> = factures payées</p><div class="grid-ca">'+caCard("Facturé aujourd\'hui",caJ)+caCard("Facturé cette semaine",caS)+caCard("Facturé ce mois",caM)+caCard("Facturé cette année",caA)+caCard("Encaissé aujourd\'hui",caJP)+caCard("Encaissé cette semaine",caSP)+caCard("Encaissé ce mois",caMP)+caCard("Encaissé cette année",caAP)+'</div><div class="card"><h3>Raccourcis</h3><div style="display:flex;flex-wrap:wrap;gap:0.5rem"><button type="button" class="btn btn-primary" id="dash-nq">Nouveau devis</button><button type="button" class="btn btn-primary" id="dash-nf">Nouvelle facture</button><button type="button" class="btn btn-secondary" id="dash-cl">Gérer les clients</button>'+(hasFeat("rapport")?'<button type="button" class="btn btn-secondary" id="dash-rp">Rapport mensuel</button>':'')+'</div></div><div class="card"><h3>Dernières factures</h3><div id="dash-inv"></div></div>';
+  el.querySelector("#dash-nq").addEventListener("click",()=>nav("nouveau-devis"));
+  el.querySelector("#dash-nf").addEventListener("click",()=>nav("nouvelle-facture"));
+  el.querySelector("#dash-cl").addEventListener("click",()=>nav("clients"));
+  const rpBtn=el.querySelector("#dash-rp");if(rpBtn)rpBtn.addEventListener("click",()=>nav("rapport"));
+  const recent=state.invoices.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+  const wrap=el.querySelector("#dash-inv");
+  if(!recent.length)wrap.innerHTML='<p class="empty-state">Aucune facture pour l\'instant.</p>';
+  else{wrap.innerHTML='<div class="table-wrap"><table><thead><tr><th>N°</th><th>Date</th><th>Client</th><th>TTC</th><th>Statut</th><th></th></tr></thead><tbody>'+recent.map(inv=>{const c=clientById(inv.clientId);const overdue=isOverdue(inv);return`<tr${overdue?' class="overdue-row"':''}><td>${escapeHtml(inv.numero)}</td><td>${formatDate(inv.date)}</td><td>${escapeHtml(c?c.nom:"—")}</td><td>${formatEUR(inv.totalTTC)}</td><td>${inv.payee?'<span class="badge badge-payee">Payée</span>':(overdue?'<span class="badge badge-retard">Retard</span>':'<span class="badge badge-impayee">Impayée</span>')}</td><td><button type="button" class="btn btn-ghost btn-sm inv-open" data-id="${inv.id}">Voir</button></td></tr>`}).join("")+'</tbody></table></div>';wrap.querySelectorAll(".inv-open").forEach(b=>b.addEventListener("click",()=>nav("edit-facture/"+b.getAttribute("data-id"))))}
+  return el;
+}
+function caCard(label,value){return`<div class="card-ca"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(formatEUR(value))}</div></div>`}
+function renderRapport(){
+  const el=document.createElement("div");
+  const now=new Date();const months=[];
+  for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({year:d.getFullYear(),month:d.getMonth(),label:d.toLocaleDateString("fr-FR",{month:"long",year:"numeric"})})}
+  let rows="";
+  months.forEach(m=>{const start=new Date(m.year,m.month,1);const end=new Date(m.year,m.month+1,0,23,59,59);const facture=caInRange(start,end,false);const encaisse=caInRange(start,end,true);const nbDevis=state.quotes.filter(q=>{const d=new Date(q.date);return d>=start&&d<=end}).length;const nbFact=state.invoices.filter(i=>{const d=new Date(i.date);return d>=start&&d<=end}).length;rows+=`<tr><td>${m.label}</td><td>${formatEUR(facture)}</td><td>${formatEUR(encaisse)}</td><td>${nbDevis}</td><td>${nbFact}</td></tr>`});
+  const mStart=startOfMonth(now),mEnd=endOfMonth(now);const clientCA={};
+  state.invoices.forEach(inv=>{const d=new Date(inv.date);if(d<mStart||d>mEnd)return;clientCA[inv.clientId]=(clientCA[inv.clientId]||0)+(Number(inv.totalTTC)||0)});
+  const topClients=Object.entries(clientCA).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  el.innerHTML='<div class="card"><h3>Évolution CA — 6 derniers mois</h3><div class="table-wrap"><table><thead><tr><th>Mois</th><th>Facturé TTC</th><th>Encaissé TTC</th><th>Devis</th><th>Factures</th></tr></thead><tbody>'+rows+'</tbody></table></div></div><div class="card"><h3>Top clients ce mois</h3>'+(topClients.length?'<div class="table-wrap"><table><thead><tr><th>Client</th><th>CA TTC</th></tr></thead><tbody>'+topClients.map(([id,ca])=>{const c=clientById(id);return`<tr><td>${escapeHtml(c?c.nom:"Inconnu")}</td><td>${formatEUR(ca)}</td></tr>`}).join("")+'</tbody></table></div>':'<p class="empty-state">Aucune facture ce mois.</p>')+'</div>'+(hasFeat("export_csv")?'<button class="btn btn-primary" id="exp-csv">⬇ Exporter en CSV</button>':'');
+  const expBtn=el.querySelector("#exp-csv");if(expBtn)expBtn.addEventListener("click",exportCSV);
+  return el;
+}
+function renderClients(){
+  const el=document.createElement("div");
+  el.innerHTML='<div class="no-print" style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center"><button type="button" class="btn btn-primary" id="add-client">+ Ajouter un client</button><input type="search" id="client-search" placeholder="Rechercher…" style="padding:0.45rem 0.75rem;border:1px solid var(--border2);border-radius:6px;font-size:0.875rem;min-width:220px"></div><div class="card"><div id="clients-table"></div></div><div id="client-modal-root"></div>';
+  function refreshTable(){
+    const q=(el.querySelector("#client-search").value||"").toLowerCase();
+    const filtered=state.clients.filter(c=>!q||[c.nom,c.societe,c.tel,c.email,c.ville].some(f=>(f||"").toLowerCase().includes(q))).sort((a,b)=>(a.nom||"").localeCompare(b.nom||"","fr"));
+    const root=el.querySelector("#clients-table");
+    if(!filtered.length){root.innerHTML=`<p class="empty-state">${q?"Aucun résultat.":"Aucun client."}</p>`;return}
+    root.innerHTML='<div class="table-wrap"><table><thead><tr><th>Nom</th><th>Téléphone</th><th>Ville</th><th>Email</th><th></th></tr></thead><tbody>'+filtered.map(c=>`<tr><td>${escapeHtml(c.nom)}${c.societe?` <small style="color:var(--text3)">(${escapeHtml(c.societe)})</small>`:""}</td><td>${escapeHtml(c.tel||"—")}</td><td>${escapeHtml(c.ville||"—")}</td><td>${escapeHtml(c.email||"—")}</td><td class="no-print" style="white-space:nowrap"><button class="btn btn-secondary btn-sm btn-edit" data-id="${c.id}">Modifier</button> <button class="btn btn-danger btn-sm btn-del" data-id="${c.id}">Supprimer</button></td></tr>`).join("")+'</tbody></table></div>';
+    root.querySelectorAll(".btn-edit").forEach(b=>b.addEventListener("click",()=>openClientModal(clientById(b.getAttribute("data-id")))));
+    root.querySelectorAll(".btn-del").forEach(b=>b.addEventListener("click",()=>{const id=b.getAttribute("data-id");if(clientHasDocs(id)){alert("Impossible : ce client a des devis ou factures associés.");return}if(!confirm("Supprimer ce client ?"))return;state.clients=state.clients.filter(c=>c.id!==id);saveState();refreshTable()}));
+  }
+  function openClientModal(client){
+    const isNew=!client;const c=client||{id:uid(),nom:"",societe:"",tel:"",email:"",adresse:"",cp:"",ville:"",notes:""};
+    const mr=el.querySelector("#client-modal-root");
+    mr.innerHTML=`<div class="modal-backdrop" id="mb"><div class="modal"><h3>${isNew?"Nouveau client":"Modifier le client"}</h3><form id="cf" class="form-grid"><div class="form-row two"><div class="form-row"><label>Nom *</label><input name="nom" required value="${escapeHtml(c.nom)}"></div><div class="form-row"><label>Société</label><input name="societe" value="${escapeHtml(c.societe)}"></div></div><div class="form-row two"><div class="form-row"><label>Téléphone</label><input name="tel" value="${escapeHtml(c.tel)}"></div><div class="form-row"><label>Email</label><input name="email" type="email" value="${escapeHtml(c.email)}"></div></div><div class="form-row"><label>Adresse</label><input name="adresse" value="${escapeHtml(c.adresse)}"></div><div class="form-row two"><div class="form-row"><label>Code postal</label><input name="cp" value="${escapeHtml(c.cp)}"></div><div class="form-row"><label>Ville</label><input name="ville" value="${escapeHtml(c.ville)}"></div></div><div class="form-row"><label>Notes</label><textarea name="notes">${escapeHtml(c.notes)}</textarea></div><div class="modal-actions"><button type="button" class="btn btn-secondary" id="cc">Annuler</button><button type="submit" class="btn btn-primary">Enregistrer</button></div></form></div></div>`;
+    mr.querySelector("#mb").addEventListener("click",e=>{if(e.target===mr.querySelector("#mb"))mr.innerHTML=""});
+    mr.querySelector("#cc").addEventListener("click",()=>mr.innerHTML="");
+    mr.querySelector("#cf").addEventListener("submit",e=>{e.preventDefault();const fd=new FormData(e.target);const updated={id:c.id,nom:(fd.get("nom")||"").trim(),societe:(fd.get("societe")||"").trim(),tel:(fd.get("tel")||"").trim(),email:(fd.get("email")||"").trim(),adresse:(fd.get("adresse")||"").trim(),cp:(fd.get("cp")||"").trim(),ville:(fd.get("ville")||"").trim(),notes:(fd.get("notes")||"").trim()};if(!updated.nom)return;const idx=state.clients.findIndex(x=>x.id===updated.id);if(idx>=0)state.clients[idx]=updated;else state.clients.push(updated);saveState();mr.innerHTML="";refreshTable()});
+  }
+  el.querySelector("#add-client").addEventListener("click",()=>openClientModal(null));
+  el.querySelector("#client-search").addEventListener("input",refreshTable);
+  refreshTable();return el;
+}
+function renderStock(){
+  const el=document.createElement("div");
+  el.innerHTML='<div class="no-print" style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center"><button type="button" class="btn btn-primary" id="add-product">+ Ajouter un produit</button><input type="search" id="prod-search" placeholder="Rechercher…" style="padding:0.45rem 0.75rem;border:1px solid var(--border2);border-radius:6px;font-size:0.875rem;min-width:200px"><select id="prod-filter" style="padding:0.45rem 0.6rem;border:1px solid var(--border2);border-radius:6px;font-size:0.875rem"><option value="">Tous</option><option value="low">Stock faible</option></select></div><div class="card"><div id="stock-table"></div></div><div id="product-modal-root"></div>';
+  function refreshStock(){
+    const q=(el.querySelector("#prod-search").value||"").toLowerCase();const filt=el.querySelector("#prod-filter").value;
+    let products=state.products.filter(p=>{if(q&&![p.nom,p.ref].some(f=>(f||"").toLowerCase().includes(q)))return false;if(filt==="low"&&Number(p.stock)>Number(p.seuil||0))return false;return true});
+    const root=el.querySelector("#stock-table");
+    if(!products.length){root.innerHTML=`<p class="empty-state">${q||filt?"Aucun résultat.":"Aucun produit."}</p>`;return}
+    root.innerHTML='<div class="table-wrap"><table><thead><tr><th>Produit</th><th>Réf.</th><th>Stock</th><th>Seuil</th><th>PU HT</th><th></th></tr></thead><tbody>'+products.map(p=>{const low=Number(p.stock)<=Number(p.seuil||0);return`<tr><td>${escapeHtml(p.nom)}</td><td>${escapeHtml(p.ref||"—")}</td><td class="${low?"stock-low":""}">${escapeHtml(String(p.stock))} ${escapeHtml(p.unite||"u.")}${low?" ⚠":""}</td><td>${escapeHtml(String(p.seuil||0))}</td><td>${formatEUR(p.prixVenteHT)}</td><td class="no-print" style="white-space:nowrap"><button class="btn btn-secondary btn-sm pe" data-id="${p.id}">Modifier</button> <button class="btn btn-danger btn-sm pd" data-id="${p.id}">Supprimer</button></td></tr>`}).join("")+'</tbody></table></div>';
+    root.querySelectorAll(".pe").forEach(b=>b.addEventListener("click",()=>openProductModal(productById(b.getAttribute("data-id")))));
+    root.querySelectorAll(".pd").forEach(b=>b.addEventListener("click",()=>{if(!confirm("Supprimer ce produit ?"))return;state.products=state.products.filter(p=>p.id!==b.getAttribute("data-id"));saveState();refreshStock()}));
+  }
+  function openProductModal(product){
+    const isNew=!product;const p=product||{id:uid(),nom:"",ref:"",stock:0,seuil:2,prixVenteHT:0,unite:"u."};
+    const mr=el.querySelector("#product-modal-root");
+    mr.innerHTML=`<div class="modal-backdrop" id="pmb"><div class="modal"><h3>${isNew?"Nouveau produit":"Modifier le produit"}</h3><form id="pf" class="form-grid"><div class="form-row"><label>Désignation *</label><input name="nom" required value="${escapeHtml(p.nom)}"></div><div class="form-row two"><div class="form-row"><label>Référence</label><input name="ref" value="${escapeHtml(p.ref)}"></div><div class="form-row"><label>Unité</label><input name="unite" value="${escapeHtml(p.unite)}"></div></div><div class="form-row two"><div class="form-row"><label>Stock actuel</label><input name="stock" type="number" step="0.01" value="${escapeHtml(String(p.stock))}"></div><div class="form-row"><label>Seuil d'alerte</label><input name="seuil" type="number" step="0.01" value="${escapeHtml(String(p.seuil))}"></div></div><div class="form-row"><label>Prix de vente HT (€)</label><input name="prixVenteHT" type="number" step="0.01" value="${escapeHtml(String(p.prixVenteHT))}"></div><div class="modal-actions"><button type="button" class="btn btn-secondary" id="pcancel">Annuler</button><button type="submit" class="btn btn-primary">Enregistrer</button></div></form></div></div>`;
+    mr.querySelector("#pmb").addEventListener("click",e=>{if(e.target===mr.querySelector("#pmb"))mr.innerHTML=""});
+    mr.querySelector("#pcancel").addEventListener("click",()=>mr.innerHTML="");
+    mr.querySelector("#pf").addEventListener("submit",e=>{e.preventDefault();const fd=new FormData(e.target);const updated={id:p.id,nom:(fd.get("nom")||"").trim(),ref:(fd.get("ref")||"").trim(),stock:Number(fd.get("stock"))||0,seuil:Number(fd.get("seuil"))||0,prixVenteHT:Number(fd.get("prixVenteHT"))||0,unite:(fd.get("unite")||"u.").trim()||"u."};if(!updated.nom)return;const idx=state.products.findIndex(x=>x.id===updated.id);if(idx>=0)state.products[idx]=updated;else state.products.push(updated);saveState();mr.innerHTML="";refreshStock()});
+  }
+  el.querySelector("#add-product").addEventListener("click",()=>openProductModal(null));
+  el.querySelector("#prod-search").addEventListener("input",refreshStock);
+  el.querySelector("#prod-filter").addEventListener("change",refreshStock);
+  refreshStock();return el;
+}
+function renderTypes(){
+  const el=document.createElement("div");
+  el.innerHTML='<div class="card"><p style="margin-top:0;color:var(--text2);font-size:0.9rem">Utilisés sur les devis et factures.</p><ul id="type-list" style="list-style:none;padding:0;margin:0 0 1rem"></ul><div class="form-row two" style="max-width:480px;align-items:flex-end"><div class="form-row"><label>Nouveau type</label><input type="text" id="new-type" placeholder="Ex. Désembouage"></div><button type="button" class="btn btn-primary" id="add-type">Ajouter</button></div></div>';
+  function refresh(){const ul=el.querySelector("#type-list");ul.innerHTML=state.operationTypes.map(o=>`<li style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid var(--border)"><span style="flex:1">${escapeHtml(o.label)}</span><button class="btn btn-danger btn-sm btn-del-type" data-id="${o.id}">Retirer</button></li>`).join("");ul.querySelectorAll(".btn-del-type").forEach(b=>b.addEventListener("click",()=>{state.operationTypes=state.operationTypes.filter(o=>o.id!==b.getAttribute("data-id"));saveState();refresh()}))}
+  el.querySelector("#add-type").addEventListener("click",()=>{const inp=el.querySelector("#new-type");const label=(inp.value||"").trim();if(!label)return;state.operationTypes.push({id:uid(),label});inp.value="";saveState();refresh()});
+  refresh();return el;
+}
+function renderSettings(){
+  const co=state.company;const el=document.createElement("div");
+  el.innerHTML='<div class="card"><h3>Coordonnées sur devis & factures</h3><form id="co-form" class="form-grid">'+`<div class="form-row"><label>Raison sociale</label><input name="nom" value="${escapeHtml(co.nom)}"></div><div class="form-row"><label>Adresse</label><input name="adresse" value="${escapeHtml(co.adresse)}"></div><div class="form-row two"><div class="form-row"><label>Téléphone</label><input name="tel" value="${escapeHtml(co.tel)}"></div><div class="form-row"><label>Email</label><input name="email" value="${escapeHtml(co.email)}"></div></div><div class="form-row two"><div class="form-row"><label>SIRET</label><input name="siret" value="${escapeHtml(co.siret)}"></div><div class="form-row"><label>TVA intracom.</label><input name="tvaIntracom" value="${escapeHtml(co.tvaIntracom)}"></div></div><div class="form-row"><label>Mention légale</label><input name="mentionLegale" value="${escapeHtml(co.mentionLegale||"")}" placeholder="Ex. TVA non applicable – art. 293 B du CGI"></div>`+'<button type="submit" class="btn btn-primary">Enregistrer</button></form></div>';
+  el.querySelector("#co-form").addEventListener("submit",e=>{e.preventDefault();const fd=new FormData(e.target);state.company={nom:(fd.get("nom")||"").trim(),adresse:(fd.get("adresse")||"").trim(),tel:(fd.get("tel")||"").trim(),email:(fd.get("email")||"").trim(),siret:(fd.get("siret")||"").trim(),tvaIntracom:(fd.get("tvaIntracom")||"").trim(),mentionLegale:(fd.get("mentionLegale")||"").trim()};saveState();alert("Paramètres enregistrés.")});
+  return el;
+}
+function ligneRowHtml(l,idx,products){const opts='<option value="">— Libre —</option>'+products.map(p=>`<option value="${escapeHtml(p.id)}"${l.productId===p.id?" selected":""}>${escapeHtml(p.nom)}</option>`).join("");return`<tr data-idx="${idx}"><td><select class="ln-prod">${opts}</select></td><td><input class="ln-lib" value="${escapeHtml(l.libelle)}"></td><td><input class="ln-qty" type="number" step="0.01" value="${escapeHtml(String(l.qty))}"></td><td><input class="ln-pu" type="number" step="0.01" value="${escapeHtml(String(l.prixUnitHT))}"></td><td><input class="ln-tva" type="number" step="0.5" value="${escapeHtml(String(l.tvaPct))}"></td><td class="no-print"><button type="button" class="btn btn-danger btn-sm ln-rm">×</button></td></tr>`}
+function readLignesFromTable(tbody){const lignes=[];tbody.querySelectorAll("tr").forEach(tr=>{const productId=tr.querySelector(".ln-prod").value||"";let libelle=(tr.querySelector(".ln-lib").value||"").trim();const qty=Number(tr.querySelector(".ln-qty").value)||0;const prixUnitHT=Number(tr.querySelector(".ln-pu").value)||0;const tvaPct=Number(tr.querySelector(".ln-tva").value)||0;if(!libelle&&productId){const p=productById(productId);if(p)libelle=p.nom}if(!libelle)return;lignes.push({productId:productId||null,libelle,qty,prixUnitHT,tvaPct})});return lignes}
+function bindLineTableRow(tr,onChange){const sel=tr.querySelector(".ln-prod");sel.addEventListener("change",()=>{const id=sel.value;if(id){const p=productById(id);if(p){tr.querySelector(".ln-lib").value=p.nom;tr.querySelector(".ln-pu").value=p.prixVenteHT}}markDirty();onChange()});tr.querySelectorAll(".ln-lib,.ln-qty,.ln-pu,.ln-tva").forEach(inp=>inp.addEventListener("input",()=>{markDirty();onChange()}));tr.querySelector(".ln-rm").addEventListener("click",()=>{tr.remove();markDirty();onChange()})}
+function bindAllLineRows(tbody,onChange){tbody.querySelectorAll("tr").forEach(tr=>bindLineTableRow(tr,onChange))}
+function addEmptyLine(tbody,products,onChange){const l={productId:null,libelle:"",qty:1,prixUnitHT:0,tvaPct:20};const idx=tbody.querySelectorAll("tr").length;const wrap=document.createElement("tbody");wrap.innerHTML=ligneRowHtml(l,idx,products);const row=wrap.firstElementChild;tbody.appendChild(row);bindLineTableRow(row,onChange);markDirty();onChange()}
+function renderQuotes(){
+  const el=document.createElement("div");
+  el.innerHTML='<div class="no-print" style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center"><button type="button" class="btn btn-primary" id="nq">+ Nouveau devis</button><input type="search" id="q-search" placeholder="Rechercher…" style="padding:0.45rem 0.75rem;border:1px solid var(--border2);border-radius:6px;font-size:0.875rem;min-width:200px"><select id="q-filter"><option value="">Tous statuts</option><option value="brouillon">Brouillon</option><option value="envoye">Envoyé</option><option value="accepte">Accepté</option><option value="refuse">Refusé</option></select></div><div class="card"><div id="qt"></div></div>';
+  el.querySelector("#nq").addEventListener("click",()=>nav("nouveau-devis"));
+  function refresh(){
+    const q=(el.querySelector("#q-search").value||"").toLowerCase();const filt=el.querySelector("#q-filter").value;const root=el.querySelector("#qt");
+    let quotes=state.quotes.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+    if(filt)quotes=quotes.filter(x=>x.statut===filt);if(q)quotes=quotes.filter(x=>{const c=clientById(x.clientId);return[x.numero,c&&c.nom,x.totalTTC].some(f=>(f+"").toLowerCase().includes(q))});
+    if(!quotes.length){root.innerHTML=`<p class="empty-state">${q||filt?"Aucun résultat.":"Aucun devis."}</p>`;return}
+    root.innerHTML='<div class="table-wrap"><table><thead><tr><th>N°</th><th>Date</th><th>Client</th><th>Type</th><th>TTC</th><th>Statut</th><th></th></tr></thead><tbody>'+quotes.map(q=>{const c=clientById(q.clientId),t=opTypeById(q.typeOpId);return`<tr><td>${escapeHtml(q.numero)}</td><td>${formatDate(q.date)}</td><td>${escapeHtml(c?c.nom:"—")}</td><td>${escapeHtml(t?t.label:"—")}</td><td>${formatEUR(q.totalTTC)}</td><td>${statutBadge(q.statut)}</td><td class="no-print" style="white-space:nowrap"><button class="btn btn-secondary btn-sm qe" data-id="${q.id}">Ouvrir</button>${q.statut==="accepte"?`<button class="btn btn-success btn-sm qconv" data-id="${q.id}">→ Facture</button>`:""}<button class="btn btn-ghost btn-sm qp" data-id="${q.id}">PDF</button><button class="btn btn-danger btn-sm qd" data-id="${q.id}">Sup.</button></td></tr>`}).join("")+'</tbody></table></div>';
+    root.querySelectorAll(".qe").forEach(b=>b.addEventListener("click",()=>nav("edit-devis/"+b.getAttribute("data-id"))));
+    root.querySelectorAll(".qp").forEach(b=>b.addEventListener("click",()=>printDoc("devis",b.getAttribute("data-id"))));
+    root.querySelectorAll(".qconv").forEach(b=>b.addEventListener("click",()=>convertQuoteToInvoice(b.getAttribute("data-id"))));
+    root.querySelectorAll(".qd").forEach(b=>b.addEventListener("click",()=>{if(!confirm("Supprimer ce devis ?"))return;state.quotes=state.quotes.filter(x=>x.id!==b.getAttribute("data-id"));saveState();refresh()}));
+  }
+  el.querySelector("#q-search").addEventListener("input",refresh);el.querySelector("#q-filter").addEventListener("change",refresh);refresh();return el;
+}
+function convertQuoteToInvoice(quoteId){
+  const q=state.quotes.find(x=>x.id===quoteId);if(!q)return;if(!confirm("Convertir ce devis en facture ?"))return;
+  const echeance=new Date();echeance.setDate(echeance.getDate()+30);
+  const inv={id:uid(),numero:nextInvoiceNumber(),clientId:q.clientId,typeOpId:q.typeOpId,date:isoToday(),echeance:echeance.toISOString().slice(0,10),payee:false,deductStock:true,lignes:q.lignes.map(l=>Object.assign({},l)),totalHT:q.totalHT,totalTVA:q.totalTVA,totalTTC:q.totalTTC,notes:q.notes||"",fromQuote:q.numero};
+  applyStockDelta(null,inv,inv.deductStock);state.invoices.push(inv);
+  const qi=state.quotes.findIndex(x=>x.id===quoteId);if(qi>=0)state.quotes[qi].statut="accepte";
+  saveState();alert(`Facture ${inv.numero} créée.`);nav("edit-facture/"+inv.id);
+}
+function statutBadge(s){const map={brouillon:"badge badge-brouillon",envoye:"badge badge-envoye",accepte:"badge badge-accepte",refuse:"badge badge-refuse"};const labels={brouillon:"Brouillon",envoye:"Envoyé",accepte:"Accepté",refuse:"Refusé"};return`<span class="${map[s]||map.brouillon}">${escapeHtml(labels[s]||s)}</span>`}
+function renderQuoteEditor(route){
+  const id=route.id;const existing=id?state.quotes.find(q=>q.id===id):null;
+  const doc=existing||{id:uid(),numero:"",clientId:"",typeOpId:state.operationTypes[0]?state.operationTypes[0].id:"",date:isoToday(),statut:"brouillon",lignes:[{libelle:"",qty:1,prixUnitHT:0,tvaPct:20,productId:null}],totalHT:0,totalTVA:0,totalTTC:0,notes:""};
+  const el=document.createElement("div");
+  el.innerHTML='<div class="no-print" style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap"><button type="button" class="btn btn-secondary" id="back">← Retour</button><button type="button" class="btn btn-primary" id="print">🖨 Imprimer / PDF</button></div><div class="card"><form id="qf"><div class="form-row two"><div class="form-row"><label>Client *</label><select name="clientId" required>'+clientOptions(doc.clientId)+'</select></div><div class="form-row"><label>Type d\'intervention</label><select name="typeOpId">'+typeOptions(doc.typeOpId)+'</select></div></div><div class="form-row two"><div class="form-row"><label>Date</label><input name="date" type="date" value="'+escapeHtml(doc.date)+'"></div><div class="form-row"><label>Statut</label><select name="statut"><option value="brouillon"'+(doc.statut==="brouillon"?" selected":"")+'>Brouillon</option><option value="envoye"'+(doc.statut==="envoye"?" selected":"")+'>Envoyé</option><option value="accepte"'+(doc.statut==="accepte"?" selected":"")+'>Accepté</option><option value="refuse"'+(doc.statut==="refuse"?" selected":"")+'>Refusé</option></select></div></div><h4 style="font-family:Georgia,serif;margin:1.25rem 0 0.5rem">Lignes</h4><div class="lines-editor"><table><thead><tr><th>Produit stock</th><th>Libellé</th><th>Qté</th><th>PU HT</th><th>TVA %</th><th class="no-print"></th></tr></thead><tbody id="lbody"></tbody></table></div><button type="button" class="btn btn-secondary no-print" id="addl">+ Ligne</button><div class="totals-box" id="totals" style="margin-top:1rem"></div><div class="form-row" style="margin-top:1rem"><label>Notes / conditions</label><textarea name="notes">'+escapeHtml(doc.notes||"")+'</textarea></div><div class="modal-actions no-print" style="margin-top:1.5rem"><button type="submit" class="btn btn-primary">Enregistrer le devis</button></div></form></div>';
+  const tbody=el.querySelector("#lbody");const products=state.products;
+  (doc.lignes||[]).forEach((l,i)=>{const wrap=document.createElement("tbody");wrap.innerHTML=ligneRowHtml(l,i,products);tbody.appendChild(wrap.firstElementChild)});
+  function updateTotals(){const lignes=readLignesFromTable(tbody);const t=computeDocTotals(lignes);el.querySelector("#totals").innerHTML=`<div><span>Total HT</span><span>${formatEUR(t.totalHT)}</span></div><div><span>TVA</span><span>${formatEUR(t.totalTVA)}</span></div><div class="total-ttc"><span>Total TTC</span><span>${formatEUR(t.totalTTC)}</span></div>`}
+  bindAllLineRows(tbody,updateTotals);updateTotals();
+  el.querySelector("#addl").addEventListener("click",()=>addEmptyLine(tbody,products,updateTotals));
+  el.querySelector("#back").addEventListener("click",()=>nav("devis"));
+  el.querySelector("#print").addEventListener("click",()=>{const b=buildQuoteFromForm();if(!b.numero)b.numero="BROUILLON";printDoc("devis",doc.id,b)});
+  el.querySelector("#qf").querySelectorAll("input,select,textarea").forEach(inp=>{if(!inp.closest(".lines-editor"))inp.addEventListener("change",markDirty)});
+  el.querySelector("#qf").addEventListener("submit",e=>{e.preventDefault();const saved=buildQuoteFromForm();if(!saved.clientId){alert("Choisissez un client.");return}if(!existing&&!saved.numero)saved.numero=nextQuoteNumber();const idx=state.quotes.findIndex(x=>x.id===saved.id);if(idx>=0)state.quotes[idx]=saved;else state.quotes.push(saved);saveState();_dirty=false;alert("Devis enregistré.");nav("devis")});
+  function buildQuoteFromForm(){const fd=new FormData(el.querySelector("#qf"));const lignes=readLignesFromTable(tbody);const t=computeDocTotals(lignes);return{id:doc.id,numero:doc.numero,clientId:fd.get("clientId"),typeOpId:fd.get("typeOpId"),date:fd.get("date"),statut:fd.get("statut"),lignes,totalHT:t.totalHT,totalTVA:t.totalTVA,totalTTC:t.totalTTC,notes:(fd.get("notes")||"").trim()}}
+  return el;
+}
+function renderInvoices(){
+  const el=document.createElement("div");
+  el.innerHTML='<div class="no-print" style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center"><button type="button" class="btn btn-primary" id="nf">+ Nouvelle facture</button><input type="search" id="inv-search" placeholder="Rechercher…" style="padding:0.45rem 0.75rem;border:1px solid var(--border2);border-radius:6px;font-size:0.875rem;min-width:200px"><select id="inv-filter"><option value="">Tous</option><option value="impayee">Impayées</option><option value="payee">Payées</option><option value="retard">En retard</option></select></div><div class="card"><div id="it"></div></div>';
+  el.querySelector("#nf").addEventListener("click",()=>nav("nouvelle-facture"));
+  function refresh(){
+    const q=(el.querySelector("#inv-search").value||"").toLowerCase();const filt=el.querySelector("#inv-filter").value;const root=el.querySelector("#it");
+    let invoices=state.invoices.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
+    if(filt==="payee")invoices=invoices.filter(i=>i.payee);else if(filt==="impayee")invoices=invoices.filter(i=>!i.payee);else if(filt==="retard")invoices=invoices.filter(i=>isOverdue(i));
+    if(q)invoices=invoices.filter(i=>{const c=clientById(i.clientId);return[i.numero,c&&c.nom,i.totalTTC].some(f=>(f+"").toLowerCase().includes(q))});
+    if(!invoices.length){root.innerHTML=`<p class="empty-state">${q||filt?"Aucun résultat.":"Aucune facture."}</p>`;return}
+    root.innerHTML='<div class="table-wrap"><table><thead><tr><th>N°</th><th>Date</th><th>Échéance</th><th>Client</th><th>TTC</th><th>Paiement</th><th></th></tr></thead><tbody>'+invoices.map(inv=>{const c=clientById(inv.clientId);const overdue=isOverdue(inv);const payBadge=inv.payee?'<span class="badge badge-payee">Payée</span>':(overdue?'<span class="badge badge-retard">En retard</span>':'<span class="badge badge-impayee">Impayée</span>');return`<tr${overdue&&!inv.payee?' class="overdue-row"':''}><td>${escapeHtml(inv.numero)}</td><td>${formatDate(inv.date)}</td><td>${formatDate(inv.echeance)}</td><td>${escapeHtml(c?c.nom:"—")}</td><td>${formatEUR(inv.totalTTC)}</td><td>${payBadge}</td><td class="no-print" style="white-space:nowrap"><button class="btn btn-secondary btn-sm ie" data-id="${inv.id}">Ouvrir</button><button class="btn btn-ghost btn-sm ip" data-id="${inv.id}">PDF</button><button class="btn btn-danger btn-sm idel" data-id="${inv.id}">Sup.</button></td></tr>`}).join("")+'</tbody></table></div>';
+    root.querySelectorAll(".ie").forEach(b=>b.addEventListener("click",()=>nav("edit-facture/"+b.getAttribute("data-id"))));
+    root.querySelectorAll(".ip").forEach(b=>b.addEventListener("click",()=>printDoc("facture",b.getAttribute("data-id"))));
+    root.querySelectorAll(".idel").forEach(b=>b.addEventListener("click",()=>{if(!confirm("Supprimer cette facture ?"))return;const id=b.getAttribute("data-id");const inv=state.invoices.find(x=>x.id===id);if(inv)revertInvoiceStock(inv);state.invoices=state.invoices.filter(x=>x.id!==id);saveState();refresh()}));
+  }
+  el.querySelector("#inv-search").addEventListener("input",refresh);el.querySelector("#inv-filter").addEventListener("change",refresh);refresh();return el;
+}
+function renderInvoiceEditor(route){
+  const id=route.id;const existing=id?state.invoices.find(x=>x.id===id):null;
+  const defaultEcheance=new Date();defaultEcheance.setDate(defaultEcheance.getDate()+30);
+  const doc=existing||{id:uid(),numero:"",clientId:"",typeOpId:state.operationTypes[0]?state.operationTypes[0].id:"",date:isoToday(),echeance:defaultEcheance.toISOString().slice(0,10),payee:false,deductStock:true,lignes:[{libelle:"",qty:1,prixUnitHT:0,tvaPct:20,productId:null}],totalHT:0,totalTVA:0,totalTTC:0,notes:""};
+  const el=document.createElement("div");
+  el.innerHTML='<div class="no-print" style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap"><button type="button" class="btn btn-secondary" id="back">← Retour</button><button type="button" class="btn btn-primary" id="print">🖨 Imprimer / PDF</button></div><div class="card"><form id="iff"><div class="form-row two"><div class="form-row"><label>Client *</label><select name="clientId" required>'+clientOptions(doc.clientId)+'</select></div><div class="form-row"><label>Type d\'intervention</label><select name="typeOpId">'+typeOptions(doc.typeOpId)+'</select></div></div><div class="form-row three"><div class="form-row"><label>Date</label><input name="date" type="date" value="'+escapeHtml(doc.date)+'"></div><div class="form-row"><label>Échéance paiement</label><input name="echeance" type="date" value="'+escapeHtml(doc.echeance||"")+'"></div><div class="form-row" style="justify-content:flex-end"><label style="display:flex;align-items:center;gap:0.4rem;margin-top:1.5rem"><input type="checkbox" name="payee"'+(doc.payee?" checked":"")+'style="width:auto">Facture payée</label></div></div><div class="form-row"><label><input type="checkbox" name="deductStock"'+(doc.deductStock!==false?" checked":"")+'style="width:auto;margin-right:0.35rem">Déduire les quantités du stock</label></div><h4 style="font-family:Georgia,serif;margin:1.25rem 0 0.5rem">Lignes</h4><div class="lines-editor"><table><thead><tr><th>Produit stock</th><th>Libellé</th><th>Qté</th><th>PU HT</th><th>TVA %</th><th class="no-print"></th></tr></thead><tbody id="ibody"></tbody></table></div><button type="button" class="btn btn-secondary no-print" id="addli">+ Ligne</button><div class="totals-box" id="itot" style="margin-top:1rem"></div><div class="form-row" style="margin-top:1rem"><label>Notes / conditions</label><textarea name="notes">'+escapeHtml(doc.notes||"")+'</textarea></div><div class="modal-actions no-print" style="margin-top:1.5rem"><button type="submit" class="btn btn-primary">Enregistrer la facture</button></div></form></div>';
+  const tbody=el.querySelector("#ibody");const products=state.products;
+  (doc.lignes||[]).forEach(l=>{const wrap=document.createElement("tbody");wrap.innerHTML=ligneRowHtml(l,0,products);tbody.appendChild(wrap.firstElementChild)});
+  function updateTotals(){const lignes=readLignesFromTable(tbody);const t=computeDocTotals(lignes);el.querySelector("#itot").innerHTML=`<div><span>Total HT</span><span>${formatEUR(t.totalHT)}</span></div><div><span>TVA</span><span>${formatEUR(t.totalTVA)}</span></div><div class="total-ttc"><span>Total TTC</span><span>${formatEUR(t.totalTTC)}</span></div>`}
+  bindAllLineRows(tbody,updateTotals);updateTotals();
+  el.querySelector("#addli").addEventListener("click",()=>addEmptyLine(tbody,products,updateTotals));
+  el.querySelector("#back").addEventListener("click",()=>nav("factures"));
+  el.querySelector("#print").addEventListener("click",()=>{const b=buildInvFromForm();if(!b.numero)b.numero="BROUILLON";printDoc("facture",doc.id,b)});
+  el.querySelector("#iff").querySelectorAll("input,select,textarea").forEach(inp=>{if(!inp.closest(".lines-editor"))inp.addEventListener("change",markDirty)});
+  el.querySelector("#iff").addEventListener("submit",e=>{
+    e.preventDefault();const prev=existing?JSON.parse(JSON.stringify(existing)):null;const saved=buildInvFromForm();
+    if(!saved.clientId){alert("Choisissez un client.");return}if(!existing&&!saved.numero)saved.numero=nextInvoiceNumber();
+    if(saved.deductStock){const warnings=[];saved.lignes.forEach(l=>{if(!l.productId)return;const p=productById(l.productId);if(!p)return;const prevQty=prev&&prev.lignes?prev.lignes.filter(x=>x.productId===l.productId).reduce((s,x)=>s+(Number(x.qty)||0),0):0;const delta=(Number(l.qty)||0)-prevQty;const futureStock=(Number(p.stock)||0)-delta;if(futureStock<0)warnings.push(`"${p.nom}" passerait à ${futureStock}`)});if(warnings.length&&!confirm("Stock insuffisant :\n"+warnings.join("\n")+"\n\nEnregistrer quand même ?"))return}
+    applyStockDelta(prev,saved,saved.deductStock);const idx=state.invoices.findIndex(x=>x.id===saved.id);if(idx>=0)state.invoices[idx]=saved;else state.invoices.push(saved);saveState();_dirty=false;alert("Facture enregistrée.");nav("factures");
+  });
+  function buildInvFromForm(){const fd=new FormData(el.querySelector("#iff"));const lignes=readLignesFromTable(tbody);const t=computeDocTotals(lignes);return{id:doc.id,numero:doc.numero,clientId:fd.get("clientId"),typeOpId:fd.get("typeOpId"),date:fd.get("date"),echeance:fd.get("echeance"),payee:!!fd.get("payee"),deductStock:!!fd.get("deductStock"),lignes,totalHT:t.totalHT,totalTVA:t.totalTVA,totalTTC:t.totalTTC,notes:(fd.get("notes")||"").trim()}}
+  return el;
+}
+function revertInvoiceStock(inv){if(!inv||!inv.deductStock)return;(inv.lignes||[]).forEach(l=>{if(!l.productId)return;const p=productById(l.productId);if(p)p.stock=(Number(p.stock)||0)+(Number(l.qty)||0)})}
+function applyStockDelta(prev,next,deduct){revertInvoiceStock(prev);if(!next||!deduct)return;(next.lignes||[]).forEach(l=>{if(!l.productId)return;const p=productById(l.productId);if(p)p.stock=(Number(p.stock)||0)-(Number(l.qty)||0)})}
+function clientOptions(selectedId){let html='<option value="">— Choisir —</option>';state.clients.slice().sort((a,b)=>(a.nom||"").localeCompare(b.nom||"","fr")).forEach(c=>{html+=`<option value="${c.id}"${c.id===selectedId?" selected":""}>${escapeHtml(c.nom)}</option>`});return html}
+function typeOptions(selectedId){return state.operationTypes.map(o=>`<option value="${o.id}"${o.id===selectedId?" selected":""}>${escapeHtml(o.label)}</option>`).join("")}
+function printDoc(kind,id,draft){
+  let doc=draft;if(!doc){if(kind==="devis")doc=state.quotes.find(q=>q.id===id);else doc=state.invoices.find(x=>x.id===id)}if(!doc)return;
+  const c=clientById(doc.clientId),t=opTypeById(doc.typeOpId),co=state.company;const title=kind==="devis"?"DEVIS":"FACTURE";
+  const lines=(doc.lignes||[]).map(l=>`<tr><td>${escapeHtml(l.libelle)}</td><td style="text-align:right">${escapeHtml(String(l.qty))}</td><td style="text-align:right">${formatEUR(l.prixUnitHT)}</td><td style="text-align:right">${escapeHtml(String(l.tvaPct))}%</td><td style="text-align:right">${formatEUR(computeLineTotals(l).ttc)}</td></tr>`).join("")||"<tr><td colspan='5'>—</td></tr>";
+  const host=document.createElement("div");host.className="print-doc";host.style.cssText="padding:2rem;font-family:Georgia,serif;max-width:800px;margin:0 auto";
+  host.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2rem"><div><h1 style="font-size:1.8rem;color:#b45309;margin:0">${title}</h1><p style="margin:0.25rem 0 0;font-size:1.1rem;font-weight:bold">N° ${escapeHtml(doc.numero)}</p></div><div style="text-align:right;font-size:0.875rem"><strong>${escapeHtml(co.nom)}</strong><br>${nl2br(co.adresse)}<br>${co.tel?"Tél. "+escapeHtml(co.tel)+"<br>":""}${co.email?escapeHtml(co.email)+"<br>":""}${co.siret?"SIRET : "+escapeHtml(co.siret)+"<br>":""}${co.tvaIntracom?"TVA : "+escapeHtml(co.tvaIntracom):""}</div></div><div style="display:flex;justify-content:space-between;margin:0 0 1.5rem;gap:2rem"><div style="font-size:0.875rem"><strong>Client</strong><br>${c?escapeHtml(c.nom)+"<br>"+nl2br(c.adresse)+"<br>"+escapeHtml((c.cp||"")+" "+(c.ville||""))+"<br>"+(c.tel?"Tél. "+escapeHtml(c.tel):""):"—"}</div><div style="font-size:0.875rem;text-align:right"><strong>Date :</strong> ${formatDate(doc.date)}<br>${kind==="facture"&&doc.echeance?`<strong>Échéance :</strong> ${formatDate(doc.echeance)}<br>`:""}${doc.fromQuote?`<strong>Devis :</strong> ${escapeHtml(doc.fromQuote)}<br>`:""}<strong>Type :</strong> ${escapeHtml(t?t.label:"—")}<br>${kind==="facture"?`<strong>Paiement :</strong> ${doc.payee?"Payée ✓":"En attente"}`:`<strong>Statut :</strong> ${escapeHtml(doc.statut||"")}`}</div></div><table style="width:100%;border-collapse:collapse;font-size:10pt;margin-bottom:1rem"><thead><tr style="border-bottom:2px solid #333"><th style="text-align:left;padding:8px 6px">Désignation</th><th style="text-align:right;padding:8px 6px">Qté</th><th style="text-align:right;padding:8px 6px">PU HT</th><th style="text-align:right;padding:8px 6px">TVA</th><th style="text-align:right;padding:8px 6px">Montant TTC</th></tr></thead><tbody>${lines}</tbody></table><div style="text-align:right;max-width:260px;margin-left:auto;font-size:10pt"><div style="display:flex;justify-content:space-between;padding:3px 0">Total HT <span>${formatEUR(doc.totalHT)}</span></div><div style="display:flex;justify-content:space-between;padding:3px 0">TVA <span>${formatEUR(doc.totalTVA)}</span></div><div style="display:flex;justify-content:space-between;padding:6px 0;font-weight:bold;font-size:12pt;border-top:2px solid #333;margin-top:4px">Total TTC <span>${formatEUR(doc.totalTTC)}</span></div></div>${doc.notes?`<div style="margin-top:1.5rem;padding:0.75rem 1rem;border:1px solid #e7e5e4;border-radius:6px;font-size:9pt;font-family:system-ui,sans-serif;color:#57534e"><strong>Notes :</strong><br>${nl2br(doc.notes)}</div>`:""}${co.mentionLegale?`<p style="margin-top:2rem;font-size:8pt;color:#78716c;font-family:system-ui,sans-serif;text-align:center;border-top:1px solid #e7e5e4;padding-top:0.5rem">${escapeHtml(co.mentionLegale)}</p>`:""}`;
+  document.body.appendChild(host);window.print();document.body.removeChild(host);
+}
+function nl2br(s){return escapeHtml(s||"").replace(/\n/g,"<br>")}
+window.addEventListener("beforeunload",e=>{if(_dirty){e.preventDefault();e.returnValue=""}});
+window.addEventListener("hashchange",render);
+if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",render)}else{render()}
+})();
+</script>
+</body>
+</html>
