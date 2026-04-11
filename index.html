@@ -301,6 +301,21 @@ function renderSignPage(route){
       state.quotes[qi].signedAt = new Date().toISOString();
       saveState();
     }
+    // Notifier N8N via webhook
+    fetch('https://n8n.srv1455484.hstgr.cloud/webhook/signature-optima', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        devis: quote.numero,
+        montant: quote.totalTTC,
+        client: client ? client.nom : 'Inconnu',
+        client_tel: client ? client.tel : '',
+        signe_par: signerName,
+        signe_le: new Date().toLocaleDateString('fr-FR'),
+        entreprise: state.company.nom,
+        entreprise_tel: state.company.tel,
+      })
+    }).catch(()=>{});
     el.querySelector('#sign-form').innerHTML = `<div class="sign-success">
       <div class="sign-check-icon">✓</div>
       <h2>Devis accepté !</h2>
@@ -358,7 +373,7 @@ function renderPlanSelector(){
       </span>
       <div class="counter-bar">
         <div class="counter-item">
-          <span class="counter-num" id="cnt-users">12</span>
+          <span class="counter-num" id="cnt-users">14</span>
           <span class="counter-label">plombiers utilisent Optima</span>
         </div>
         <div class="counter-sep"></div>
@@ -409,6 +424,14 @@ function renderPlanSelector(){
           </div>
           <h3>Tu pilotes ton activité</h3>
           <p>Tableau de bord CA en temps réel, alertes stock, rapport mensuel. Tu sais exactement où tu en es.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">05</div>
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Le client signe en ligne</h3>
+          <p>Tu envoies un lien au client. Il signe le devis depuis son téléphone en 30 secondes. Le statut passe automatiquement à "Accepté".</p>
         </div>
       </div>
     </div>
@@ -494,6 +517,10 @@ function renderPlanSelector(){
         <div class="faq-item">
           <h4>C'est quoi l'accès ?</h4>
           <p>Les formules Pro et Business ont des frais d'accès uniques (49€ ou 99€) en plus de l'abonnement mensuel.</p>
+        </div>
+        <div class="faq-item">
+          <h4>Conforme facturation électronique 2027 ?</h4>
+          <p>Oui. Optima sera conforme à la réforme de facturation électronique obligatoire avant septembre 2027. Restez serein.</p>
         </div>
       </div>
     </div>
