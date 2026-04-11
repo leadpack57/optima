@@ -145,6 +145,31 @@ td{padding:0.6rem 0.75rem;vertical-align:middle}
 .empty-state{color:var(--text3);font-style:italic;padding:1.5rem 0;text-align:center}
 .overdue-row td{background:#fff5f5}
 @media print{.no-print,.sidebar,.topbar,.topbar-actions,.nav-links{display:none!important}.app-shell{display:block}.main{display:block}.content{padding:0}.print-doc{display:block}.card,.main,.content,.app-shell{border:none!important;box-shadow:none!important;background:white!important}body{background:white}}
+
+/* Signature */
+.sign-btn{background:#16a34a;color:#fff;border:none;border-radius:6px;padding:0.45rem 0.9rem;font-size:0.875rem;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:0.35rem}
+.sign-btn:hover{background:#15803d}
+.sign-page{min-height:100vh;background:#faf9f7;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;font-family:system-ui,sans-serif}
+.sign-card{background:#fff;border:1px solid #e7e5e4;border-radius:12px;padding:2rem;width:100%;max-width:620px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.sign-card h1{font-size:1.3rem;font-weight:700;font-family:Georgia,serif;margin-bottom:0.25rem;color:#1c1917}
+.sign-card .sign-sub{font-size:0.875rem;color:#78716c;margin-bottom:1.5rem}
+.sign-devis-recap{background:#f5f4f1;border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:0.875rem}
+.sign-devis-recap table{width:100%;border-collapse:collapse}
+.sign-devis-recap td{padding:4px 0;color:#57534e}
+.sign-devis-recap td:last-child{text-align:right;font-weight:600;color:#1c1917}
+.sign-input{width:100%;padding:0.6rem 0.8rem;border:2px solid #e7e5e4;border-radius:6px;font-size:1rem;margin-bottom:1rem;transition:border-color .15s}
+.sign-input:focus{outline:none;border-color:#b45309}
+.sign-check{display:flex;align-items:flex-start;gap:0.5rem;margin-bottom:1.5rem;font-size:0.875rem;color:#57534e;cursor:pointer}
+.sign-check input{margin-top:2px;flex-shrink:0;width:16px;height:16px;cursor:pointer}
+.sign-confirm-btn{width:100%;padding:0.8rem;background:#b45309;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .15s}
+.sign-confirm-btn:hover{background:#92400e}
+.sign-confirm-btn:disabled{opacity:0.5;cursor:not-allowed}
+.sign-success{text-align:center;padding:2rem}
+.sign-success .sign-check-icon{width:64px;height:64px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem}
+.sign-success h2{font-size:1.3rem;font-weight:700;color:#16a34a;margin-bottom:0.5rem;font-family:Georgia,serif}
+.sign-success p{color:#57534e;font-size:0.9rem}
+.sign-expired{text-align:center;padding:2rem;color:#dc2626}
+
 </style>
 </head>
 <body>
@@ -202,13 +227,98 @@ function clientHasDocs(clientId){return state.quotes.some(q=>q.clientId===client
 function getRoute(){const h=(location.hash||"#/").replace(/^#\/?/,"")||"dashboard";const parts=h.split("/");return{view:parts[0],id:parts[1]||null}}
 function nav(to){if(_dirty&&!confirm("Modifications non enregistrées. Quitter ?"))return;_dirty=false;location.hash="#/"+to}
 const app=document.getElementById("app");
+
+
+/* ——— Signature électronique ——— */
+function generateSignLink(quoteId){
+  const base = window.location.href.split('#')[0];
+  return base + '#/sign/' + quoteId;
+}
+
+function renderSignPage(route){
+  const quoteId = route.id;
+  const quote = state.quotes.find(q => q.id === quoteId);
+  const el = document.createElement('div');
+
+  if(!quote){
+    el.innerHTML = `<div class="sign-page"><div class="sign-card"><div class="sign-expired"><h2>Devis introuvable</h2><p>Ce lien de signature est invalide ou a expiré.</p></div></div></div>`;
+    return el;
+  }
+
+  if(quote.statut === 'accepte'){
+    el.innerHTML = `<div class="sign-page"><div class="sign-card"><div class="sign-success"><div class="sign-check-icon">✓</div><h2>Devis déjà signé</h2><p>Ce devis a déjà été accepté. Merci !</p></div></div></div>`;
+    return el;
+  }
+
+  const client = clientById(quote.clientId);
+  const t = opTypeById(quote.typeOpId);
+  const co = state.company;
+
+  el.innerHTML = `<div class="sign-page">
+    <div class="sign-card">
+      <h1>Signature du devis ${escapeHtml(quote.numero)}</h1>
+      <p class="sign-sub">Proposé par ${escapeHtml(co.nom)} · ${escapeHtml(formatDate(quote.date))}</p>
+      <div class="sign-devis-recap">
+        <table>
+          <tr><td>Client</td><td>${escapeHtml(client ? client.nom : '—')}</td></tr>
+          <tr><td>Type</td><td>${escapeHtml(t ? t.label : '—')}</td></tr>
+          <tr><td>Total HT</td><td>${formatEUR(quote.totalHT)}</td></tr>
+          <tr><td>TVA</td><td>${formatEUR(quote.totalTVA)}</td></tr>
+          <tr><td style="font-weight:700;color:#1c1917">Total TTC</td><td style="font-size:1.1rem">${formatEUR(quote.totalTTC)}</td></tr>
+        </table>
+        ${quote.notes ? `<p style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid #e7e5e4;font-size:0.82rem;color:#78716c">${escapeHtml(quote.notes)}</p>` : ''}
+      </div>
+      <div id="sign-form">
+        <label style="font-size:0.82rem;font-weight:500;color:#57534e;display:block;margin-bottom:0.35rem">Votre nom complet *</label>
+        <input type="text" class="sign-input" id="sign-name" placeholder="Ex. Jean Dupont">
+        <label class="sign-check">
+          <input type="checkbox" id="sign-agree">
+          J'ai lu et j'accepte le devis ${escapeHtml(quote.numero)} pour un montant de ${formatEUR(quote.totalTTC)} TTC. Cette validation vaut acceptation du devis.
+        </label>
+        <button class="sign-confirm-btn" id="sign-submit" disabled>✍ Signer et accepter le devis</button>
+      </div>
+      <p style="margin-top:1rem;font-size:0.75rem;color:#a8a29e;text-align:center">Signature électronique sécurisée · ${new Date().toLocaleDateString('fr-FR')}</p>
+    </div>
+  </div>`;
+
+  const nameInput = el.querySelector('#sign-name');
+  const agreeCheck = el.querySelector('#sign-agree');
+  const submitBtn = el.querySelector('#sign-submit');
+
+  function checkForm(){
+    submitBtn.disabled = !(nameInput.value.trim().length > 2 && agreeCheck.checked);
+  }
+
+  nameInput.addEventListener('input', checkForm);
+  agreeCheck.addEventListener('change', checkForm);
+
+  submitBtn.addEventListener('click', () => {
+    const signerName = nameInput.value.trim();
+    const qi = state.quotes.findIndex(q => q.id === quoteId);
+    if(qi >= 0){
+      state.quotes[qi].statut = 'accepte';
+      state.quotes[qi].signedBy = signerName;
+      state.quotes[qi].signedAt = new Date().toISOString();
+      saveState();
+    }
+    el.querySelector('#sign-form').innerHTML = `<div class="sign-success">
+      <div class="sign-check-icon">✓</div>
+      <h2>Devis accepté !</h2>
+      <p>Merci <strong>${escapeHtml(signerName)}</strong>, votre acceptation du devis ${escapeHtml(quote.numero)} a bien été enregistrée.</p>
+      <p style="margin-top:0.5rem">Nous vous contacterons très prochainement.</p>
+    </div>`;
+  });
+
+  return el;
+}
+
 function render(){
   if(!state.plan){renderPlanSelector();return}
   const r=getRoute();
-  const views={dashboard:renderDashboard,clients:renderClients,stock:renderStock,devis:renderQuotes,"nouveau-devis":renderQuoteEditor,"edit-devis":renderQuoteEditor,factures:renderInvoices,"nouvelle-facture":renderInvoiceEditor,"edit-facture":renderInvoiceEditor,types:renderTypes,parametres:renderSettings,rapport:renderRapport};
+  const views={dashboard:renderDashboard,clients:renderClients,stock:renderStock,devis:renderQuotes,"nouveau-devis":renderQuoteEditor,"edit-devis":renderQuoteEditor,factures:renderInvoices,"nouvelle-facture":renderInvoiceEditor,"edit-facture":renderInvoiceEditor,types:renderTypes,parametres:renderSettings,rapport:renderRapport,sign:renderSignPage};
   const fn=views[r.view];
   if(!fn){location.hash="#/dashboard";return}
-  const titles={dashboard:"Tableau de bord",clients:"Clients",stock:"Stock & produits",devis:"Devis","nouveau-devis":"Nouveau devis","edit-devis":"Modifier le devis",factures:"Factures","nouvelle-facture":"Nouvelle facture","edit-facture":"Modifier la facture",types:"Types d'intervention",parametres:"Paramètres entreprise",rapport:"Rapport mensuel"};
+  const titles={dashboard:"Tableau de bord",clients:"Clients",stock:"Stock & produits",devis:"Devis","nouveau-devis":"Nouveau devis","edit-devis":"Modifier le devis",factures:"Factures","nouvelle-facture":"Nouvelle facture","edit-facture":"Modifier la facture",types:"Types d'intervention",parametres:"Paramètres entreprise",rapport:"Rapport mensuel",sign:"Signature devis"};
   app.innerHTML='<div class="app-shell">'+sidebarHtml(r.view,r)+'<div class="main"><header class="topbar"><h2>'+escapeHtml(titles[r.view]||"Optima")+'</h2><div class="topbar-actions no-print"><button type="button" class="btn btn-secondary" id="btn-export">⬇ Exporter</button><label class="btn btn-secondary" style="cursor:pointer;margin:0">⬆ Importer<input type="file" id="import-file" accept=".json" style="display:none"></label>'+(hasFeat("export_csv")?'<button type="button" class="btn btn-secondary" id="btn-csv">📊 Export comptable</button>':'')+'</div></header><div class="content" id="main-content"></div></div></div>';
   document.getElementById("main-content").appendChild(fn(r));
   bindGlobalActions();
@@ -543,9 +653,13 @@ function renderQuotes(){
     let quotes=state.quotes.slice().sort((a,b)=>new Date(b.date)-new Date(a.date));
     if(filt)quotes=quotes.filter(x=>x.statut===filt);if(q)quotes=quotes.filter(x=>{const c=clientById(x.clientId);return[x.numero,c&&c.nom,x.totalTTC].some(f=>(f+"").toLowerCase().includes(q))});
     if(!quotes.length){root.innerHTML=`<p class="empty-state">${q||filt?"Aucun résultat.":"Aucun devis."}</p>`;return}
-    root.innerHTML='<div class="table-wrap"><table><thead><tr><th>N°</th><th>Date</th><th>Client</th><th>Type</th><th>TTC</th><th>Statut</th><th></th></tr></thead><tbody>'+quotes.map(q=>{const c=clientById(q.clientId),t=opTypeById(q.typeOpId);return`<tr><td>${escapeHtml(q.numero)}</td><td>${formatDate(q.date)}</td><td>${escapeHtml(c?c.nom:"—")}</td><td>${escapeHtml(t?t.label:"—")}</td><td>${formatEUR(q.totalTTC)}</td><td>${statutBadge(q.statut)}</td><td class="no-print" style="white-space:nowrap"><button class="btn btn-secondary btn-sm qe" data-id="${q.id}">Ouvrir</button>${q.statut==="accepte"?`<button class="btn btn-success btn-sm qconv" data-id="${q.id}">→ Facture</button>`:""}<button class="btn btn-ghost btn-sm qp" data-id="${q.id}">PDF</button><button class="btn btn-danger btn-sm qd" data-id="${q.id}">Sup.</button></td></tr>`}).join("")+'</tbody></table></div>';
+    root.innerHTML='<div class="table-wrap"><table><thead><tr><th>N°</th><th>Date</th><th>Client</th><th>Type</th><th>TTC</th><th>Statut</th><th></th></tr></thead><tbody>'+quotes.map(q=>{const c=clientById(q.clientId),t=opTypeById(q.typeOpId);return`<tr><td>${escapeHtml(q.numero)}</td><td>${formatDate(q.date)}</td><td>${escapeHtml(c?c.nom:"—")}</td><td>${escapeHtml(t?t.label:"—")}</td><td>${formatEUR(q.totalTTC)}</td><td>${statutBadge(q.statut)}</td><td class="no-print" style="white-space:nowrap"><button class="btn btn-secondary btn-sm qe" data-id="${q.id}">Ouvrir</button>${q.statut==="accepte"?`<button class="btn btn-success btn-sm qconv" data-id="${q.id}">→ Facture</button>`:'<button class="btn btn-ghost btn-sm qsign" data-id="'+q.id+'">✍ Signer</button>'}<button class="btn btn-ghost btn-sm qp" data-id="${q.id}">PDF</button><button class="btn btn-danger btn-sm qd" data-id="${q.id}">Sup.</button></td></tr>`}).join("")+'</tbody></table></div>';
     root.querySelectorAll(".qe").forEach(b=>b.addEventListener("click",()=>nav("edit-devis/"+b.getAttribute("data-id"))));
     root.querySelectorAll(".qp").forEach(b=>b.addEventListener("click",()=>printDoc("devis",b.getAttribute("data-id"))));
+    root.querySelectorAll(".qsign").forEach(b=>b.addEventListener("click",()=>{
+      const link = generateSignLink(b.getAttribute("data-id"));
+      navigator.clipboard.writeText(link).then(()=>alert("Lien de signature copié !\n\n"+link)).catch(()=>prompt("Copiez ce lien et envoyez-le à votre client :",link));
+    }));
     root.querySelectorAll(".qconv").forEach(b=>b.addEventListener("click",()=>convertQuoteToInvoice(b.getAttribute("data-id"))));
     root.querySelectorAll(".qd").forEach(b=>b.addEventListener("click",()=>{if(!confirm("Supprimer ce devis ?"))return;state.quotes=state.quotes.filter(x=>x.id!==b.getAttribute("data-id"));saveState();refresh()}));
   }
@@ -564,7 +678,7 @@ function renderQuoteEditor(route){
   const id=route.id;const existing=id?state.quotes.find(q=>q.id===id):null;
   const doc=existing||{id:uid(),numero:"",clientId:"",typeOpId:state.operationTypes[0]?state.operationTypes[0].id:"",date:isoToday(),statut:"brouillon",lignes:[{libelle:"",qty:1,prixUnitHT:0,tvaPct:20,productId:null}],totalHT:0,totalTVA:0,totalTTC:0,notes:""};
   const el=document.createElement("div");
-  el.innerHTML='<div class="no-print" style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap"><button type="button" class="btn btn-secondary" id="back">← Retour</button><button type="button" class="btn btn-primary" id="print">🖨 Imprimer / PDF</button></div><div class="card"><form id="qf"><div class="form-row two"><div class="form-row"><label>Client *</label><select name="clientId" required>'+clientOptions(doc.clientId)+'</select></div><div class="form-row"><label>Type d\'intervention</label><select name="typeOpId">'+typeOptions(doc.typeOpId)+'</select></div></div><div class="form-row two"><div class="form-row"><label>Date</label><input name="date" type="date" value="'+escapeHtml(doc.date)+'"></div><div class="form-row"><label>Statut</label><select name="statut"><option value="brouillon"'+(doc.statut==="brouillon"?" selected":"")+'>Brouillon</option><option value="envoye"'+(doc.statut==="envoye"?" selected":"")+'>Envoyé</option><option value="accepte"'+(doc.statut==="accepte"?" selected":"")+'>Accepté</option><option value="refuse"'+(doc.statut==="refuse"?" selected":"")+'>Refusé</option></select></div></div><h4 style="font-family:Georgia,serif;margin:1.25rem 0 0.5rem">Lignes</h4><div class="lines-editor"><table><thead><tr><th>Produit stock</th><th>Libellé</th><th>Qté</th><th>PU HT</th><th>TVA %</th><th class="no-print"></th></tr></thead><tbody id="lbody"></tbody></table></div><button type="button" class="btn btn-secondary no-print" id="addl">+ Ligne</button><div class="totals-box" id="totals" style="margin-top:1rem"></div><div class="form-row" style="margin-top:1rem"><label>Notes / conditions</label><textarea name="notes">'+escapeHtml(doc.notes||"")+'</textarea></div><div class="modal-actions no-print" style="margin-top:1.5rem"><button type="submit" class="btn btn-primary">Enregistrer le devis</button></div></form></div>';
+  el.innerHTML='<div class="no-print" style="margin-bottom:1rem;display:flex;gap:0.5rem;flex-wrap:wrap"><button type="button" class="btn btn-secondary" id="back">← Retour</button><button type="button" class="btn btn-primary" id="print">🖨 Imprimer / PDF</button><button type="button" class="btn btn-success" id="sign-link">✍ Lien de signature</button></div><div class="card"><form id="qf"><div class="form-row two"><div class="form-row"><label>Client *</label><select name="clientId" required>'+clientOptions(doc.clientId)+'</select></div><div class="form-row"><label>Type d\'intervention</label><select name="typeOpId">'+typeOptions(doc.typeOpId)+'</select></div></div><div class="form-row two"><div class="form-row"><label>Date</label><input name="date" type="date" value="'+escapeHtml(doc.date)+'"></div><div class="form-row"><label>Statut</label><select name="statut"><option value="brouillon"'+(doc.statut==="brouillon"?" selected":"")+'>Brouillon</option><option value="envoye"'+(doc.statut==="envoye"?" selected":"")+'>Envoyé</option><option value="accepte"'+(doc.statut==="accepte"?" selected":"")+'>Accepté</option><option value="refuse"'+(doc.statut==="refuse"?" selected":"")+'>Refusé</option></select></div></div><h4 style="font-family:Georgia,serif;margin:1.25rem 0 0.5rem">Lignes</h4><div class="lines-editor"><table><thead><tr><th>Produit stock</th><th>Libellé</th><th>Qté</th><th>PU HT</th><th>TVA %</th><th class="no-print"></th></tr></thead><tbody id="lbody"></tbody></table></div><button type="button" class="btn btn-secondary no-print" id="addl">+ Ligne</button><div class="totals-box" id="totals" style="margin-top:1rem"></div><div class="form-row" style="margin-top:1rem"><label>Notes / conditions</label><textarea name="notes">'+escapeHtml(doc.notes||"")+'</textarea></div><div class="modal-actions no-print" style="margin-top:1.5rem"><button type="submit" class="btn btn-primary">Enregistrer le devis</button></div></form></div>';
   const tbody=el.querySelector("#lbody");const products=state.products;
   (doc.lignes||[]).forEach((l,i)=>{const wrap=document.createElement("tbody");wrap.innerHTML=ligneRowHtml(l,i,products);tbody.appendChild(wrap.firstElementChild)});
   function updateTotals(){const lignes=readLignesFromTable(tbody);const t=computeDocTotals(lignes);el.querySelector("#totals").innerHTML=`<div><span>Total HT</span><span>${formatEUR(t.totalHT)}</span></div><div><span>TVA</span><span>${formatEUR(t.totalTVA)}</span></div><div class="total-ttc"><span>Total TTC</span><span>${formatEUR(t.totalTTC)}</span></div>`}
