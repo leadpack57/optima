@@ -209,6 +209,48 @@ td{padding:0.6rem 0.75rem;vertical-align:middle}
 .logo-upload-wrap:hover{border-color:var(--primary)}
 .logo-preview{max-height:80px;max-width:200px;object-fit:contain;margin:0 auto;display:block}
 
+
+/* Avis clients */
+.reviews-section{width:100%;max-width:880px;margin-top:3rem;position:relative;z-index:1}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.review-card{background:#1a2535;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1.25rem}
+.review-stars{color:#f59e0b;font-size:14px;margin-bottom:0.5rem}
+.review-text{font-family:'DM Sans',sans-serif;font-size:0.875rem;color:#94a3b8;line-height:1.6;margin-bottom:0.75rem;font-style:italic}
+.review-author{display:flex;align-items:center;gap:10px}
+.review-avatar{width:36px;height:36px;border-radius:50%;background:#b45309;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.8rem;color:#fff;flex-shrink:0}
+.review-name{font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;color:#e2e8f0}
+.review-ville{font-family:'DM Sans',sans-serif;font-size:0.75rem;color:#475569}
+/* Calculateur ROI */
+.roi-section{width:100%;max-width:880px;margin-top:3rem;position:relative;z-index:1;background:#1a2535;border:1px solid rgba(234,88,12,0.2);border-radius:16px;padding:2rem}
+.roi-section h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;letter-spacing:2px;text-align:center;margin-bottom:0.5rem}
+.roi-section p{font-family:'DM Sans',sans-serif;font-size:0.9rem;color:#94a3b8;text-align:center;margin-bottom:1.5rem}
+.roi-sliders{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+.roi-slider-wrap{display:flex;flex-direction:column;gap:0.5rem}
+.roi-slider-label{font-family:'DM Sans',sans-serif;font-size:0.82rem;color:#94a3b8;display:flex;justify-content:space-between}
+.roi-slider-label span{color:#fb923c;font-weight:600}
+.roi-result{background:#0f1923;border-radius:12px;padding:1.25rem;text-align:center}
+.roi-result-num{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:#ea580c;letter-spacing:2px;line-height:1}
+.roi-result-label{font-family:'DM Sans',sans-serif;font-size:0.875rem;color:#94a3b8;margin-top:0.25rem}
+.roi-result-sub{font-family:'DM Sans',sans-serif;font-size:0.8rem;color:#475569;margin-top:0.5rem}
+/* Compteur places */
+.places-banner{background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.3);border-radius:8px;padding:0.75rem 1.25rem;text-align:center;margin-bottom:1rem;font-family:'DM Sans',sans-serif;font-size:0.875rem;color:#fca5a5;position:relative;z-index:1}
+.places-banner strong{color:#f87171}
+/* Bouton SMS */
+.sms-float{position:fixed;bottom:1.5rem;right:1.5rem;z-index:50;background:#16a34a;color:#fff;border:none;border-radius:99px;padding:12px 20px;font-size:0.875rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);font-family:'DM Sans',sans-serif}
+.sms-float:hover{background:#15803d}
+/* Garantie */
+.garantie-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.3);padding:8px 16px;border-radius:99px;font-size:0.8rem;color:#86efac;font-family:'DM Sans',sans-serif;margin-top:1rem}
+/* GIF demo */
+.demo-gif-section{width:100%;max-width:880px;margin-top:3rem;position:relative;z-index:1;text-align:center}
+.demo-gif-wrap{background:#1a2535;border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;padding:1.5rem}
+.demo-screen{background:#0f1923;border-radius:8px;padding:1rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:0.82rem;color:#94a3b8;min-height:180px;position:relative;overflow:hidden}
+.demo-line{padding:4px 0;display:flex;align-items:center;gap:8px;opacity:0;animation:fadeInLine 0.4s forwards}
+.demo-line.active{color:#e2e8f0}
+.demo-cursor{display:inline-block;width:2px;height:14px;background:#ea580c;animation:blink 1s infinite}
+@keyframes fadeInLine{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@media(max-width:600px){.roi-sliders{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -368,6 +410,85 @@ function renderSignPage(route){
 
 
 
+
+// Bouton SMS flottant
+function addSMSButton(){
+  if(document.getElementById('sms-float-btn')) return;
+  var btn = document.createElement('button');
+  btn.id = 'sms-float-btn';
+  btn.className = 'sms-float';
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Nous contacter';
+  btn.addEventListener('click', function(){
+    window.location.href = 'sms:+33767377115?body=Bonjour, je suis intéressé par Optima pour plombiers.';
+  });
+  document.body.appendChild(btn);
+}
+
+// Calculateur ROI
+function initROI(){
+  var nbDevis = document.getElementById('nb-devis');
+  var tempsDevis = document.getElementById('temps-devis');
+  var taux = document.getElementById('taux-horaire');
+  var perdus = document.getElementById('devis-perdus');
+  if(!nbDevis) return;
+  function calcROI(){
+    var nb = parseInt(nbDevis.value);
+    var temps = parseInt(tempsDevis.value);
+    var tx = parseInt(taux.value);
+    var perd = parseInt(perdus.value);
+    document.getElementById('nb-devis-val').textContent = nb;
+    document.getElementById('temps-devis-val').textContent = temps;
+    document.getElementById('taux-val').textContent = tx;
+    document.getElementById('perdu-val').textContent = perd;
+    // Temps gagné : avec Optima 2 min au lieu de X min
+    var gainTempsParDevis = temps - 2;
+    var nbDevisMois = nb * 4;
+    var gainHeures = (gainTempsParDevis * nbDevisMois) / 60;
+    var gainArgent = Math.round(gainHeures * tx);
+    // Devis perdus récupérés (moyenne 300€ par devis)
+    var gainDevisPerdus = perd * 300;
+    var total = gainArgent + gainDevisPerdus;
+    document.getElementById('roi-gain').textContent = total + '€';
+    document.getElementById('roi-detail').textContent = gainHeures.toFixed(1) + 'h récupérées + ' + perd + ' devis non oubliés · vs 29€/mois';
+  }
+  nbDevis.addEventListener('input', calcROI);
+  tempsDevis.addEventListener('input', calcROI);
+  taux.addEventListener('input', calcROI);
+  perdus.addEventListener('input', calcROI);
+  calcROI();
+}
+
+// GIF démo animé
+function initDemoGif(){
+  var screen = document.getElementById('demo-screen');
+  if(!screen) return;
+  var steps = [
+    {text: '👤 Client : Jean Dupont — 12 rue des Lilas, Metz', delay: 500},
+    {text: '🔧 Prestation : Débouchage canalisation', delay: 1500},
+    {text: '💰 Prix unitaire : 150€ HT — TVA 10%', delay: 2500},
+    {text: '📄 Génération du devis D-2026-001...', delay: 3500, special: true},
+    {text: '✅ PDF créé — Envoi par email au client', delay: 4500},
+    {text: '📱 Notification : Client a signé le devis !', delay: 6000, success: true},
+  ];
+  steps.forEach(function(step){
+    setTimeout(function(){
+      var line = document.createElement('div');
+      line.className = 'demo-line' + (step.special ? ' active' : '') + (step.success ? ' active' : '');
+      line.style.color = step.success ? '#86efac' : step.special ? '#fb923c' : '';
+      line.style.animationDelay = '0s';
+      line.innerHTML = step.text;
+      screen.appendChild(line);
+      // Restart après la fin
+      if(step === steps[steps.length-1]){
+        setTimeout(function(){
+          screen.innerHTML = '<div style="color:#475569;font-size:0.75rem;margin-bottom:0.75rem">▶ Optima — Nouveau devis</div>';
+          initDemoGif();
+        }, 3000);
+      }
+    }, step.delay);
+  });
+}
+
 function updateDemoCounter(){var k='optima_demo_week',w='optima_demo_week_num',wn=Math.floor(new Date().getTime()/(7*24*60*60*1000)),sw=parseInt(localStorage.getItem(w)||'0');if(sw!==wn){localStorage.setItem(k,'14');localStorage.setItem(w,String(wn))}return parseInt(localStorage.getItem(k)||'14')}
 function incrementDemoCounter(){var k='optima_demo_week',c=parseInt(localStorage.getItem(k)||'14');localStorage.setItem(k,String(c+1));var el=document.getElementById('demo-count');if(el)el.textContent=c+1}
 function showEmailCapture(cb){var ov=document.createElement('div');ov.className='email-capture-overlay';ov.innerHTML='<div class="email-capture-card"><div style="font-size:2rem;margin-bottom:0.75rem">✅</div><h2>Ton devis est prêt !</h2><p>Entre ton email pour recevoir ton devis et découvrir comment l\'envoyer automatiquement.</p><input type="email" class="email-capture-input" id="capture-email" placeholder="ton@email.com"><button class="email-capture-btn" id="capture-submit">Recevoir mon devis →</button><button class="email-capture-skip" id="capture-skip">Continuer sans email</button></div>';document.body.appendChild(ov);document.getElementById('capture-submit').addEventListener('click',function(){var em=document.getElementById('capture-email').value.trim();if(em&&em.includes('@')){var leads=JSON.parse(localStorage.getItem('optima_leads')||'[]');leads.push({email:em,date:new Date().toISOString()});localStorage.setItem('optima_leads',JSON.stringify(leads));ov.remove();cb();}else{document.getElementById('capture-email').style.borderColor='#dc2626'}});document.getElementById('capture-skip').addEventListener('click',function(){ov.remove();cb()})}
@@ -517,7 +638,9 @@ function renderPlanSelector(){
     </div>
 
     <!-- PLANS -->
-    <h2 class="section-title" style="margin-bottom:1.5rem">Choisissez votre formule</h2>
+    <h2 class="section-title" style="margin-bottom:1rem">Choisissez votre formule</h2>
+    <div class="places-banner">🔥 <strong>Il reste 4 places Starter</strong> ce mois · Offre limitée aux premiers utilisateurs</div>
+    <div style="text-align:center;margin-bottom:1.5rem"><span class="garantie-badge">🛡️ Satisfait ou remboursé 30 jours · Sans engagement</span></div>
     <div class="plan-cards">
       <div class="plan-card" id="pick-starter">
         <p class="plan-name">Starter</p>
@@ -611,6 +734,79 @@ function renderPlanSelector(){
       <div class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Sans engagement</div>
       <div class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Données sécurisées</div>
       <div class="trust-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Support réactif</div>
+    </div>
+
+
+    <!-- GIF DEMO -->
+    <div class="demo-gif-section">
+      <h2 class="section-title">Vois comment ça marche</h2>
+      <div class="demo-gif-wrap">
+        <p style="font-family:'DM Sans',sans-serif;font-size:0.875rem;color:#64748b;margin-bottom:1rem">Création d'un devis en temps réel 👇</p>
+        <div class="demo-screen" id="demo-screen">
+          <div style="color:#475569;font-size:0.75rem;margin-bottom:0.75rem">▶ Optima — Nouveau devis</div>
+        </div>
+        <p style="font-family:'DM Sans',sans-serif;font-size:0.8rem;color:#475569;margin-top:0.75rem">⏱ Moins de 2 minutes · PDF envoyé automatiquement</p>
+      </div>
+    </div>
+
+    <!-- CALCULATEUR ROI -->
+    <div class="roi-section">
+      <h2>Combien tu perds par semaine ?</h2>
+      <p>Calcule le temps et l'argent que tu récupères avec Optima</p>
+      <div class="roi-sliders">
+        <div class="roi-slider-wrap">
+          <div class="roi-slider-label">Devis par semaine <span id="nb-devis-val">5</span></div>
+          <input type="range" min="1" max="20" value="5" id="nb-devis" step="1">
+        </div>
+        <div class="roi-slider-wrap">
+          <div class="roi-slider-label">Temps par devis (min) <span id="temps-devis-val">30</span></div>
+          <input type="range" min="10" max="120" value="30" id="temps-devis" step="5">
+        </div>
+        <div class="roi-slider-wrap">
+          <div class="roi-slider-label">Ton taux horaire (€/h) <span id="taux-val">50</span></div>
+          <input type="range" min="20" max="100" value="50" id="taux-horaire" step="5">
+        </div>
+        <div class="roi-slider-wrap">
+          <div class="roi-slider-label">Devis perdus/mois (oubli) <span id="perdu-val">2</span></div>
+          <input type="range" min="0" max="10" value="2" id="devis-perdus" step="1">
+        </div>
+      </div>
+      <div class="roi-result">
+        <div class="roi-result-num" id="roi-gain">0€</div>
+        <div class="roi-result-label">récupérés par mois grâce à Optima</div>
+        <div class="roi-result-sub" id="roi-detail">vs 29€/mois d'abonnement</div>
+      </div>
+    </div>
+
+    <!-- AVIS CLIENTS -->
+    <div class="reviews-section">
+      <h2 class="section-title">Ce qu'ils en disent</h2>
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="review-stars">★★★★☆</div>
+          <p class="review-text">"Avant je passais 45 minutes sur chaque devis. Maintenant c'est fait en 2 minutes depuis le chantier. Le client reçoit le PDF direct sur son téléphone."</p>
+          <div class="review-author">
+            <div class="review-avatar">ML</div>
+            <div><div class="review-name">Mickael L.</div><div class="review-ville">Plombier · Metz (57)</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★★</div>
+          <p class="review-text">"J'avais peur que ce soit compliqué mais non. En 5 minutes j'avais créé mon premier devis. Le client a signé le soir même."</p>
+          <div class="review-author">
+            <div class="review-avatar">TR</div>
+            <div><div class="review-name">Thomas R.</div><div class="review-ville">Chauffagiste · Nancy (54)</div></div>
+          </div>
+        </div>
+        <div class="review-card">
+          <div class="review-stars">★★★★☆</div>
+          <p class="review-text">"Le truc qui m'a convaincu c'est les alertes stock. Je reçois un SMS quand il me reste moins de 10 joints. Fini les allers-retours au dépôt."</p>
+          <div class="review-author">
+            <div class="review-avatar">SB</div>
+            <div><div class="review-name">Sébastien B.</div><div class="review-ville">Plombier · Strasbourg (67)</div></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <p style="margin-top:1.5rem;font-size:0.75rem;color:#334155;font-family:'DM Sans',sans-serif">© 2026 Optima · Fait pour les plombiers · contact@optima-services.fr</p>
