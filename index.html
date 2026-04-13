@@ -170,6 +170,45 @@ td{padding:0.6rem 0.75rem;vertical-align:middle}
 .sign-success p{color:#57534e;font-size:0.9rem}
 .sign-expired{text-align:center;padding:2rem;color:#dc2626}
 
+
+/* Demo mode */
+.demo-badge{background:#ea580c;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:99px;margin-left:8px;vertical-align:middle}
+.demo-banner{background:#1a2535;border:1px solid rgba(234,88,12,0.4);border-radius:var(--radius);padding:0.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.demo-banner p{font-size:0.875rem;color:#fb923c;font-weight:500}
+.demo-banner button{background:#ea580c;color:#fff;border:none;border-radius:6px;padding:6px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap}
+/* Paywall overlay */
+.paywall-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem}
+.paywall-card{background:#1a2535;border:1px solid rgba(234,88,12,0.4);border-radius:16px;padding:2rem;max-width:480px;width:100%;text-align:center;font-family:'DM Sans',sans-serif}
+.paywall-card .check-icon{width:64px;height:64px;background:rgba(22,163,74,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem}
+.paywall-card h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;letter-spacing:1px;margin-bottom:0.5rem}
+.paywall-card p{font-size:0.9rem;color:#94a3b8;margin-bottom:1.5rem;line-height:1.6}
+.paywall-features{text-align:left;margin-bottom:1.5rem}
+.paywall-feature{display:flex;align-items:center;gap:8px;font-size:0.875rem;color:#cbd5e1;padding:6px 0}
+.paywall-feature::before{content:"✓";color:#ea580c;font-weight:700;flex-shrink:0}
+.paywall-btn{width:100%;padding:0.9rem;background:#ea580c;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:0.75rem}
+.paywall-btn:hover{background:#c2410c}
+.paywall-skip{background:transparent;border:none;color:#475569;font-size:0.8rem;cursor:pointer;text-decoration:underline}
+
+
+.demo-counter{display:inline-flex;align-items:center;gap:8px;background:rgba(234,88,12,0.15);border:1px solid rgba(234,88,12,0.3);padding:6px 16px;border-radius:99px;font-size:0.8rem;color:#fb923c;font-family:'DM Sans',sans-serif;margin-top:0.75rem}
+.demo-counter-num{font-weight:700;font-size:1rem;color:#ea580c}
+.email-capture-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:1rem}
+.email-capture-card{background:#1a2535;border:1px solid rgba(234,88,12,0.4);border-radius:16px;padding:2rem;max-width:420px;width:100%;text-align:center;font-family:'DM Sans',sans-serif}
+.email-capture-card h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#fff;letter-spacing:1px;margin-bottom:0.5rem}
+.email-capture-card p{font-size:0.875rem;color:#94a3b8;margin-bottom:1.5rem;line-height:1.6}
+.email-capture-input{width:100%;padding:0.75rem 1rem;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.95rem;background:#0f1923;color:#fff;margin-bottom:0.75rem;box-sizing:border-box}
+.email-capture-input:focus{outline:none;border-color:#ea580c}
+.email-capture-btn{width:100%;padding:0.9rem;background:#ea580c;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;margin-bottom:0.5rem}
+.email-capture-btn:hover{background:#c2410c}
+.email-capture-skip{background:transparent;border:none;color:#475569;font-size:0.8rem;cursor:pointer;text-decoration:underline}
+.catalogue-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:0.75rem}
+.catalogue-item{background:#f5f4f1;border:1px solid var(--border2);border-radius:6px;padding:6px 12px;font-size:0.82rem;cursor:pointer;transition:all .15s;user-select:none;font-family:system-ui}
+.catalogue-item:hover{background:#fef3c7;border-color:#b45309;color:#92400e}
+.catalogue-item.selected{background:#b45309;color:#fff;border-color:#b45309}
+.logo-upload-wrap{border:2px dashed var(--border2);border-radius:8px;padding:1rem;text-align:center;cursor:pointer;transition:border-color .15s}
+.logo-upload-wrap:hover{border-color:var(--primary)}
+.logo-preview{max-height:80px;max-width:200px;object-fit:contain;margin:0 auto;display:block}
+
 </style>
 </head>
 <body>
@@ -327,6 +366,42 @@ function renderSignPage(route){
   return el;
 }
 
+
+
+function updateDemoCounter(){var k='optima_demo_week',w='optima_demo_week_num',wn=Math.floor(new Date().getTime()/(7*24*60*60*1000)),sw=parseInt(localStorage.getItem(w)||'0');if(sw!==wn){localStorage.setItem(k,'14');localStorage.setItem(w,String(wn))}return parseInt(localStorage.getItem(k)||'14')}
+function incrementDemoCounter(){var k='optima_demo_week',c=parseInt(localStorage.getItem(k)||'14');localStorage.setItem(k,String(c+1));var el=document.getElementById('demo-count');if(el)el.textContent=c+1}
+function showEmailCapture(cb){var ov=document.createElement('div');ov.className='email-capture-overlay';ov.innerHTML='<div class="email-capture-card"><div style="font-size:2rem;margin-bottom:0.75rem">✅</div><h2>Ton devis est prêt !</h2><p>Entre ton email pour recevoir ton devis et découvrir comment l\'envoyer automatiquement.</p><input type="email" class="email-capture-input" id="capture-email" placeholder="ton@email.com"><button class="email-capture-btn" id="capture-submit">Recevoir mon devis →</button><button class="email-capture-skip" id="capture-skip">Continuer sans email</button></div>';document.body.appendChild(ov);document.getElementById('capture-submit').addEventListener('click',function(){var em=document.getElementById('capture-email').value.trim();if(em&&em.includes('@')){var leads=JSON.parse(localStorage.getItem('optima_leads')||'[]');leads.push({email:em,date:new Date().toISOString()});localStorage.setItem('optima_leads',JSON.stringify(leads));ov.remove();cb();}else{document.getElementById('capture-email').style.borderColor='#dc2626'}});document.getElementById('capture-skip').addEventListener('click',function(){ov.remove();cb()})}
+var CATALOGUE=[{label:'Débouchage',prix:150},{label:'Fuite eau',prix:120},{label:'Installation robinet',prix:180},{label:'Rénovation salle de bains',prix:2500},{label:'Chauffe-eau',prix:800},{label:'Chaudière',prix:1200},{label:'WC bouché',prix:130},{label:'Douche italienne',prix:1500},{label:'Radiateur',prix:300},{label:'Dépannage urgence',prix:200},{label:'Mise aux normes',prix:500},{label:'Installation sanitaire',prix:600}];
+
+/* ——— Mode démo ——— */
+function startDemo(){
+  state.plan = 'demo';
+  state.demoDevisCount = 0;
+  saveState();
+  location.hash = '#/nouveau-devis';
+  render();
+}
+
+function showPaywall(){
+  const overlay = document.createElement('div');
+  overlay.className = 'paywall-overlay';
+  overlay.innerHTML = `
+    <div class="paywall-card">
+      <div class="check-icon">✅</div>
+      <h2>Ton devis est prêt !</h2>
+      <p>Crée ton compte pour l'envoyer à ton client, le sauvegarder et générer la facture automatiquement.</p>
+      <div class="paywall-features">
+        <div class="paywall-feature">Envoyer le devis par email ou WhatsApp</div>
+        <div class="paywall-feature">Sauvegarder tous tes devis</div>
+        <div class="paywall-feature">Générer la facture en 1 clic</div>
+        <div class="paywall-feature">Gérer ton stock avec alertes</div>
+      </div>
+      <button class="paywall-btn" onclick="window.location.href='https://buy.stripe.com/5kQcN777F5ocgut1fMd3i0c'">Créer mon compte — Starter 29€/mois</button>
+      <button class="paywall-skip" onclick="this.closest('.paywall-overlay').remove()">Continuer en mode démo</button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
 function render(){
   if(!state.plan){renderPlanSelector();return}
   const r=getRoute();
@@ -371,6 +446,11 @@ function renderPlanSelector(){
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
         Devis · Stock · Factures · Automatique
       </span>
+      <div style="margin-top:1.5rem">
+        <button id="btn-demo" style="background:#ea580c;color:#fff;border:none;border-radius:8px;padding:14px 32px;font-size:1rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.3px">👉 Créer mon devis gratuitement (sans compte)</button>
+        <p style="font-size:0.78rem;color:#475569;margin-top:8px;font-family:'DM Sans',sans-serif">Aucune carte requise · Test immédiat · 2 minutes</p>
+        <div class="demo-counter"><span class="demo-counter-num" id="demo-count">14</span>&nbsp;plombiers ont testé cette semaine</div>
+      </div>
       <div class="counter-bar">
         <div class="counter-item">
           <span class="counter-num" id="cnt-users">14</span>
@@ -537,6 +617,8 @@ function renderPlanSelector(){
   </div>`;
 
   document.getElementById("pick-starter").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/5kQcN777F5ocgut1fMd3i0c"});
+  const demoBtn = document.getElementById("btn-demo");
+  if(demoBtn) demoBtn.addEventListener("click", startDemo);
   document.getElementById("pick-pro").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/aFa8wRgIf9Es6TT4rYd3i0f"});
   document.getElementById("pick-business").querySelector(".plan-btn").addEventListener("click",()=>{window.location.href="https://buy.stripe.com/4gM3cxajR6sgeml5w2d3i0d"});
 }
@@ -551,7 +633,7 @@ function sidebarHtml(current,r){
     else links+=`<span class="nav-link locked-nav" title="Disponible en Pro/Business">${escapeHtml(label)} 🔒</span>`;
   });
   const overdueCount=state.invoices.filter(i=>isOverdue(i)).length;
-  return`<aside class="sidebar"><div class="sidebar-brand"><h1>Optima</h1><p>Gestion artisan plombier</p></div><div class="plan-pill">${plan.name}</div><nav class="nav-links">${links}</nav>${overdueCount?`<div style="padding:0.75rem 1.25rem;background:#7f1d1d;margin:0.5rem 0.75rem;border-radius:6px"><p style="color:#fca5a5;font-size:0.75rem;font-weight:600">${overdueCount} facture${overdueCount>1?"s":""} en retard</p></div>`:""}<div style="padding:0.75rem 1.25rem;margin-top:auto"><button class="btn btn-ghost btn-sm" id="btn-change-plan" style="color:#a8a29e;font-size:0.75rem;width:100%">Changer de formule</button></div><div style="padding:0.5rem 1.25rem 1rem;font-size:0.7rem;color:#78716c">Données locales — exportez régulièrement.</div></aside>`;
+  return`<aside class="sidebar"><div class="sidebar-brand"><h1>Optima</h1><p>Gestion artisan plombier</p></div><div class="plan-pill">${plan.name}${state.plan==='demo'?'<span class="demo-badge">DÉMO</span>':''}</div><nav class="nav-links">${links}</nav>${overdueCount?`<div style="padding:0.75rem 1.25rem;background:#7f1d1d;margin:0.5rem 0.75rem;border-radius:6px"><p style="color:#fca5a5;font-size:0.75rem;font-weight:600">${overdueCount} facture${overdueCount>1?"s":""} en retard</p></div>`:""}<div style="padding:0.75rem 1.25rem;margin-top:auto"><button class="btn btn-ghost btn-sm" id="btn-change-plan" style="color:#a8a29e;font-size:0.75rem;width:100%">Changer de formule</button></div><div style="padding:0.5rem 1.25rem 1rem;font-size:0.7rem;color:#78716c">Données locales — exportez régulièrement.</div></aside>`;
 }
 function bindGlobalActions(){
   document.getElementById("btn-export").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="optima-backup-"+new Date().toISOString().slice(0,10)+".json";a.click();URL.revokeObjectURL(a.href)});
@@ -579,7 +661,8 @@ function renderDashboard(){
   let alerts="";
   if(overdueInvs.length)alerts+=`<div class="alert alert-danger">⚠ ${overdueInvs.length} facture${overdueInvs.length>1?"s":""} en retard de paiement.</div>`;
   if(lowStock.length)alerts+=`<div class="alert alert-warning">📦 ${lowStock.length} produit${lowStock.length>1?"s":""} en stock faible : ${lowStock.map(p=>escapeHtml(p.nom)).join(", ")}.</div>`;
-  el.innerHTML=alerts+'<p style="color:var(--text2);margin:0 0 0.35rem;font-size:0.875rem">CA TTC : <strong>facturé</strong> = toutes factures · <strong>encaissé</strong> = factures payées</p><div class="grid-ca">'+caCard("Facturé aujourd\'hui",caJ)+caCard("Facturé cette semaine",caS)+caCard("Facturé ce mois",caM)+caCard("Facturé cette année",caA)+caCard("Encaissé aujourd\'hui",caJP)+caCard("Encaissé cette semaine",caSP)+caCard("Encaissé ce mois",caMP)+caCard("Encaissé cette année",caAP)+'</div><div class="card"><h3>Raccourcis</h3><div style="display:flex;flex-wrap:wrap;gap:0.5rem"><button type="button" class="btn btn-primary" id="dash-nq">Nouveau devis</button><button type="button" class="btn btn-primary" id="dash-nf">Nouvelle facture</button><button type="button" class="btn btn-secondary" id="dash-cl">Gérer les clients</button>'+(hasFeat("rapport")?'<button type="button" class="btn btn-secondary" id="dash-rp">Rapport mensuel</button>':'')+'</div></div><div class="card"><h3>Dernières factures</h3><div id="dash-inv"></div></div>';
+  const demoBanner = state.plan==='demo' ? '<div class="demo-banner"><p>👋 Mode démo — Crée un devis pour voir comment ça marche !</p><button onclick="window.location.href=\'https://buy.stripe.com/5kQcN777F5ocgut1fMd3i0c\'">Créer mon compte</button></div>' : '';
+  el.innerHTML=demoBanner+alerts+'<p style="color:var(--text2);margin:0 0 0.35rem;font-size:0.875rem">CA TTC : <strong>facturé</strong> = toutes factures · <strong>encaissé</strong> = factures payées</p><div class="grid-ca">'+caCard("Facturé aujourd\'hui",caJ)+caCard("Facturé cette semaine",caS)+caCard("Facturé ce mois",caM)+caCard("Facturé cette année",caA)+caCard("Encaissé aujourd\'hui",caJP)+caCard("Encaissé cette semaine",caSP)+caCard("Encaissé ce mois",caMP)+caCard("Encaissé cette année",caAP)+'</div><div class="card"><h3>Raccourcis</h3><div style="display:flex;flex-wrap:wrap;gap:0.5rem"><button type="button" class="btn btn-primary" id="dash-nq">Nouveau devis</button><button type="button" class="btn btn-primary" id="dash-nf">Nouvelle facture</button><button type="button" class="btn btn-secondary" id="dash-cl">Gérer les clients</button>'+(hasFeat("rapport")?'<button type="button" class="btn btn-secondary" id="dash-rp">Rapport mensuel</button>':'')+'</div></div><div class="card"><h3>Dernières factures</h3><div id="dash-inv"></div></div>';
   el.querySelector("#dash-nq").addEventListener("click",()=>nav("nouveau-devis"));
   el.querySelector("#dash-nf").addEventListener("click",()=>nav("nouvelle-facture"));
   el.querySelector("#dash-cl").addEventListener("click",()=>nav("clients"));
@@ -711,6 +794,8 @@ function renderQuoteEditor(route){
   function updateTotals(){const lignes=readLignesFromTable(tbody);const t=computeDocTotals(lignes);el.querySelector("#totals").innerHTML=`<div><span>Total HT</span><span>${formatEUR(t.totalHT)}</span></div><div><span>TVA</span><span>${formatEUR(t.totalTVA)}</span></div><div class="total-ttc"><span>Total TTC</span><span>${formatEUR(t.totalTTC)}</span></div>`}
   bindAllLineRows(tbody,updateTotals);updateTotals();
   el.querySelector("#addl").addEventListener("click",()=>addEmptyLine(tbody,products,updateTotals));
+  var cw=el.querySelector('#cat-wrap');
+  if(cw){var cg=document.createElement('div');cg.className='catalogue-grid';CATALOGUE.forEach(function(item){var b=document.createElement('button');b.type='button';b.className='catalogue-item';b.textContent=item.label;b.addEventListener('click',function(){b.classList.toggle('selected');addEmptyLine(tbody,products,updateTotals);var rows=tbody.querySelectorAll('tr');var lr=rows[rows.length-1];if(lr){lr.querySelector('.ln-lib').value=item.label;lr.querySelector('.ln-qty').value='1';lr.querySelector('.ln-pu').value=item.prix;updateTotals()}});cg.appendChild(b)});cw.appendChild(cg)}
   el.querySelector("#back").addEventListener("click",()=>nav("devis"));
   el.querySelector("#print").addEventListener("click",()=>{const b=buildQuoteFromForm();if(!b.numero)b.numero="BROUILLON";printDoc("devis",doc.id,b)});
   el.querySelector("#qf").querySelectorAll("input,select,textarea").forEach(inp=>{if(!inp.closest(".lines-editor"))inp.addEventListener("change",markDirty)});
