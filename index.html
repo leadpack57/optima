@@ -425,36 +425,25 @@ function addSMSButton(){
 }
 
 // Calculateur ROI
+function calcROI(){
+  var nb = parseInt((document.getElementById('nb-devis')||{value:5}).value)||5;
+  var temps = parseInt((document.getElementById('temps-devis')||{value:30}).value)||30;
+  var tx = parseInt((document.getElementById('taux-horaire')||{value:50}).value)||50;
+  var perd = parseInt((document.getElementById('devis-perdus')||{value:2}).value)||2;
+  var v1=document.getElementById('nb-devis-val');if(v1)v1.textContent=nb;
+  var v2=document.getElementById('temps-devis-val');if(v2)v2.textContent=temps;
+  var v3=document.getElementById('taux-val');if(v3)v3.textContent=tx;
+  var v4=document.getElementById('perdu-val');if(v4)v4.textContent=perd;
+  var gainTemps=(temps-2)*nb*4/60;
+  var gainArgent=Math.round(gainTemps*tx);
+  var gainPerdus=perd*300;
+  var total=gainArgent+gainPerdus;
+  var gain=document.getElementById('roi-gain');if(gain)gain.textContent=total+'€';
+  var det=document.getElementById('roi-detail');if(det)det.textContent=gainTemps.toFixed(1)+'h récupérées + '+perd+' devis non oubliés · vs 29€/mois';
+}
 function initROI(){
-  var nbDevis = document.getElementById('nb-devis');
-  var tempsDevis = document.getElementById('temps-devis');
-  var taux = document.getElementById('taux-horaire');
-  var perdus = document.getElementById('devis-perdus');
-  if(!nbDevis) return;
-  function calcROI(){
-    var nb = parseInt(nbDevis.value);
-    var temps = parseInt(tempsDevis.value);
-    var tx = parseInt(taux.value);
-    var perd = parseInt(perdus.value);
-    document.getElementById('nb-devis-val').textContent = nb;
-    document.getElementById('temps-devis-val').textContent = temps;
-    document.getElementById('taux-val').textContent = tx;
-    document.getElementById('perdu-val').textContent = perd;
-    // Temps gagné : avec Optima 2 min au lieu de X min
-    var gainTempsParDevis = temps - 2;
-    var nbDevisMois = nb * 4;
-    var gainHeures = (gainTempsParDevis * nbDevisMois) / 60;
-    var gainArgent = Math.round(gainHeures * tx);
-    // Devis perdus récupérés (moyenne 300€ par devis)
-    var gainDevisPerdus = perd * 300;
-    var total = gainArgent + gainDevisPerdus;
-    document.getElementById('roi-gain').textContent = total + '€';
-    document.getElementById('roi-detail').textContent = gainHeures.toFixed(1) + 'h récupérées + ' + perd + ' devis non oubliés · vs 29€/mois';
-  }
-  nbDevis.addEventListener('input', calcROI);
-  tempsDevis.addEventListener('input', calcROI);
-  taux.addEventListener('input', calcROI);
-  perdus.addEventListener('input', calcROI);
+  var ids=['nb-devis','temps-devis','taux-horaire','devis-perdus'];
+  ids.forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',calcROI)});
   calcROI();
 }
 
@@ -756,23 +745,23 @@ function renderPlanSelector(){
       <div class="roi-sliders">
         <div class="roi-slider-wrap">
           <div class="roi-slider-label">Devis par semaine <span id="nb-devis-val">5</span></div>
-          <input type="range" min="1" max="20" value="5" id="nb-devis" step="1">
+          <input type="range" min="1" max="20" value="5" id="nb-devis" step="1" oninput="calcROI()">
         </div>
         <div class="roi-slider-wrap">
           <div class="roi-slider-label">Temps par devis (min) <span id="temps-devis-val">30</span></div>
-          <input type="range" min="10" max="120" value="30" id="temps-devis" step="5">
+          <input type="range" min="10" max="120" value="30" id="temps-devis" step="5" oninput="calcROI()">
         </div>
         <div class="roi-slider-wrap">
           <div class="roi-slider-label">Ton taux horaire (€/h) <span id="taux-val">50</span></div>
-          <input type="range" min="20" max="100" value="50" id="taux-horaire" step="5">
+          <input type="range" min="20" max="100" value="50" id="taux-horaire" step="5" oninput="calcROI()">
         </div>
         <div class="roi-slider-wrap">
           <div class="roi-slider-label">Devis perdus/mois (oubli) <span id="perdu-val">2</span></div>
-          <input type="range" min="0" max="10" value="2" id="devis-perdus" step="1">
+          <input type="range" min="0" max="10" value="2" id="devis-perdus" step="1" oninput="calcROI()">
         </div>
       </div>
-      <div class="roi-result">
-        <div class="roi-result-num" id="roi-gain">0€</div>
+      <div class="roi-result" id="roi-result-wrap">
+        <div class="roi-result-num" id="roi-gain">680€</div>
         <div class="roi-result-label">récupérés par mois grâce à Optima</div>
         <div class="roi-result-sub" id="roi-detail">vs 29€/mois d'abonnement</div>
       </div>
