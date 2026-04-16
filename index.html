@@ -250,16 +250,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
   <div class="hero-glow"></div>
   <div class="hero-badge">
     <span class="hero-badge-dot"></span>
-    <span id="hero-count">14</span> plombiers actifs cette semaine
+    ⚠️ J-<span id="countdown-days">500</span> avant l'obligation légale · <span id="hero-count">14</span> plombiers déjà conformes
   </div>
   <h1 class="hero-title">
-    Ton devis en<br>
-    <span class="accent">2 minutes.</span><br>
-    <span class="dim">Depuis le chantier.</span>
+    En 2027, tes devis<br>
+    <span class="dim">papier seront</span><br>
+    <span class="accent">illégaux.</span>
   </h1>
   <p class="hero-sub">
-    Fini les devis oubliés, les factures en retard, les papiers perdus.<br>
-    <strong>PDF pro au client · Signature en ligne · Facture automatique.</strong>
+    La facturation électronique devient <strong>obligatoire pour tous les artisans en septembre 2027.</strong><br>
+    Optima te met en conformité — et te fait gagner <strong>2h par jour</strong> dès maintenant.
   </p>
   <div class="hero-actions">
     <button class="btn-primary" id="hero-cta-btn">
@@ -299,6 +299,27 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <div class="stat-item"><div class="stat-num">600€</div><div class="stat-label">récupérés/mois</div></div>
     <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">mobile & chantier</div></div>
     <div class="stat-item"><div class="stat-num">2027</div><div class="stat-label">facturation électronique ✓</div></div>
+  </div>
+</section>
+
+<!-- URGENCE 2027 -->
+<section style="padding:4rem 2rem;background:rgba(239,68,68,0.05);border-top:1px solid rgba(239,68,68,0.15);border-bottom:1px solid rgba(239,68,68,0.15)">
+  <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center">
+    <div>
+      <div style="font-size:0.78rem;font-weight:600;color:#f87171;text-transform:uppercase;letter-spacing:2px;margin-bottom:1rem">⚠️ Obligation légale</div>
+      <h2 style="font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;letter-spacing:-1px;margin-bottom:1rem;line-height:1.2">Septembre 2027 :<br>la facturation électronique est obligatoire</h2>
+      <p style="font-size:0.9rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem">Tous les artisans et TPE de France devront émettre leurs factures en format électronique. Les factures PDF classiques ne seront plus acceptées. <strong style="color:var(--text)">Les plombiers qui ne s'adaptent pas risquent des pénalités.</strong></p>
+      <div style="display:flex;flex-direction:column;gap:0.75rem">
+        <div style="display:flex;align-items:center;gap:10px;font-size:0.875rem;color:var(--text2)"><span style="color:#f87171;font-weight:700">✗</span> Excel, Word, PDF classique → illégaux en 2027</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:0.875rem;color:var(--text2)"><span style="color:#22c55e;font-weight:700">✓</span> Optima → conforme dès maintenant</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:0.875rem;color:var(--text2)"><span style="color:#22c55e;font-weight:700">✓</span> Aucune démarche supplémentaire pour toi</div>
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid rgba(239,68,68,0.2);border-radius:16px;padding:2rem;text-align:center">
+      <div style="font-family:'Syne',sans-serif;font-size:4rem;font-weight:800;color:#f87171;line-height:1" id="days-big">500</div>
+      <div style="font-size:0.875rem;color:var(--text3);margin-top:0.5rem;margin-bottom:1.5rem">jours avant l'obligation légale</div>
+      <button onclick="document.getElementById('hero-cta-btn').click()" style="width:100%;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Me mettre en conformité maintenant →</button>
+    </div>
   </div>
 </section>
 
@@ -487,7 +508,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     <div class="pricing-card featured">
       <div class="pricing-badge">⭐ Le plus populaire</div>
       <div class="pricing-name">Pro</div>
-      <div class="pricing-price">59€<span>/mois</span></div>
+      <div class="pricing-price">79€<span>/mois</span></div>
       <p class="pricing-desc">Pour le plombier actif qui veut aller plus loin.</p>
       <ul class="pricing-features">
         <li>Tout le Starter</li>
@@ -515,6 +536,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;heigh
     </div>
   </div>
   <p class="garantie"><span>🛡️ Garantie satisfait ou remboursé 30 jours</span> · Sans condition · Sans question</p>
+  <div style="max-width:700px;margin:2.5rem auto 0;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;text-align:center">
+    <div style="font-size:2rem;margin-bottom:0.75rem">🤝</div>
+    <h3 style="font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:0.5rem">Parraine un collègue → 1 mois offert</h3>
+    <p style="font-size:0.875rem;color:var(--text2);margin-bottom:1.25rem;line-height:1.6">Tu connais un plombier qui perd encore du temps sur ses devis ? Envoie-lui le lien — quand il s'abonne, tu reçois 1 mois gratuit automatiquement.</p>
+    <button onclick="shareOptima()" style="background:var(--orange);color:#fff;border:none;border-radius:8px;padding:12px 28px;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:8px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Parrainer un collègue via WhatsApp
+    </button>
+  </div>
 </section>
 
 <!-- FAQ -->
@@ -598,6 +628,23 @@ function nextLine(){
   setTimeout(nextLine, l.text ? 700 : 300);
 }
 setTimeout(nextLine, 1000);
+
+// ===== COUNTDOWN 2027 =====
+(function(){
+  var target = new Date('2027-09-01');
+  var now = new Date();
+  var days = Math.ceil((target - now) / (1000*60*60*24));
+  var el = document.getElementById('countdown-days');
+  var el2 = document.getElementById('days-big');
+  if(el2) el2.textContent = days;
+  if(el) el.textContent = days;
+})();
+
+// ===== PARRAINAGE =====
+function shareOptima(){
+  var msg = encodeURIComponent("Yo, t'as vu qu'en 2027 les devis papier vont être illégaux pour les artisans ? J'utilise Optima pour mes devis depuis le chantier — 2 min et le client reçoit le PDF direct. Test gratuit ici : https://optimaservices.netlify.app");
+  window.open('https://wa.me/?text='+msg, '_blank');
+}
 
 // ===== ROI CALCULATOR =====
 function calcROI(){
